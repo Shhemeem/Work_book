@@ -1,0 +1,3671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageDocumentTitle">SiteFlow - Construction & Jobsite Manager</title>
+
+  <!-- PWA & Mobile Home Screen Meta Tags (iOS & Android) -->
+  <meta name="application-name" id="metaAppName" content="SiteFlow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" id="metaAppleTitle" content="SiteFlow">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" id="metaThemeColor" content="#0f172a">
+
+  <!-- Dynamic iOS Apple Touch Icon & Android Shortcut Icons -->
+  <link id="appleTouchIcon" rel="apple-touch-icon" sizes="180x180" href="">
+  <link id="androidShortcutIcon" rel="icon" type="image/png" sizes="192x192" href="">
+  <link id="standardFavicon" rel="shortcut icon" href="">
+  <link id="pwaManifest" rel="manifest" href="">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome for crisp construction icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            },
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Sleek custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .modal-backdrop {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+    }
+    /* iOS Squircle approximation */
+    .ios-squircle {
+      border-radius: 22.5%;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-amber-400 selection:text-slate-900">
+
+  <!-- AUTHENTICATION SCREEN OVERLAY (Shown when user is signed out) -->
+  <div id="authScreen" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden my-auto">
+      
+      <!-- Auth Header -->
+      <div class="bg-slate-900 p-6 text-white text-center relative">
+        <div id="authBrandLogoWrap" class="w-14 h-14 rounded-2xl bg-amber-500 mx-auto flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg mb-3 overflow-hidden">
+          <i class="fa-solid fa-helmet-safety" id="authDefaultIcon"></i>
+          <img id="authCustomLogoImg" src="" alt="App Logo" class="hidden w-full h-full object-cover">
+        </div>
+        <h2 class="text-xl font-black tracking-tight text-white" id="authBrandTitle">SiteFlow</h2>
+        <p class="text-xs text-slate-400 mt-1" id="authBrandSubtitle">Multi-Site Jobsite & Equipment Portal</p>
+
+        <!-- Auth Method Selector Switcher -->
+        <div class="flex items-center justify-center gap-1 bg-slate-800 p-1 rounded-xl mt-4 max-w-xs mx-auto text-xs font-bold">
+          <button type="button" onclick="switchAuthTab('login')" id="tabBtn-login" class="flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 transition">Login</button>
+          <button type="button" onclick="switchAuthTab('register')" id="tabBtn-register" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Register</button>
+          <button type="button" onclick="switchAuthTab('phone')" id="tabBtn-phone" class="flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white transition">Phone OTP</button>
+        </div>
+      </div>
+
+      <!-- Auth Form Panels Container -->
+      <div class="p-6">
+
+        <!-- 1. EMAIL LOGIN PANEL -->
+        <div id="authPanel-login" class="space-y-4">
+          <form onsubmit="handleEmailLogin(event)" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+              <div class="relative">
+                <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="email" id="loginEmail" required placeholder="supervisor@jobsite.com" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-bold text-slate-700 uppercase">Password</label>
+                <button type="button" onclick="switchAuthTab('forgot')" class="text-[11px] font-semibold text-amber-600 hover:underline">Forgot password?</button>
+              </div>
+              <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <button type="submit" id="btnLoginSubmit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition shadow-md flex items-center justify-center gap-2">
+              <i class="fa-solid fa-right-to-bracket text-amber-400"></i>
+              <span>Sign In to SiteFlow</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. REGISTRATION PANEL -->
+        <div id="authPanel-register" class="hidden space-y-4">
+          <form onsubmit="handleRegister(event)" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name</label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="regName" required placeholder="Carlos Mendez" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+              <div class="relative">
+                <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="email" id="regEmail" required placeholder="carlos@jobsite.com" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Create Password</label>
+              <div class="relative">
+                <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="password" id="regPassword" minlength="6" required placeholder="At least 6 characters" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <button type="submit" id="btnRegisterSubmit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold transition shadow-md flex items-center justify-center gap-2">
+              <i class="fa-solid fa-user-plus"></i>
+              <span>Create Supervisor Account</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- 3. PHONE NUMBER & OTP PANEL -->
+        <div id="authPanel-phone" class="hidden space-y-4">
+          <!-- Step A: Enter Phone Number -->
+          <div id="phoneStepNumber" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mobile Phone (with country code)</label>
+              <div class="relative">
+                <i class="fa-solid fa-mobile-screen absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="tel" id="phoneInput" placeholder="+1 555-0199 or +91 9876543210" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 font-mono">
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Include international country code prefix (e.g. +1, +91).</p>
+            </div>
+
+            <div id="recaptcha-container" class="my-2"></div>
+
+            <button type="button" onclick="sendPhoneOtp()" id="btnSendOtp" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition shadow-md flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Send OTP Verification Code</span>
+            </button>
+          </div>
+
+          <!-- Step B: Verify OTP Code -->
+          <div id="phoneStepOtp" class="hidden space-y-3.5">
+            <div class="bg-sky-50 p-3 rounded-xl border border-sky-100 text-xs text-sky-800">
+              SMS verification code sent to <strong id="sentPhoneDisplay">phone</strong>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">6-Digit SMS Code</label>
+              <input type="text" id="phoneOtpInput" maxlength="6" placeholder="123456" class="w-full text-center tracking-widest text-lg font-black py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 font-mono">
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="resetPhoneAuth()" class="w-1/3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl border border-slate-200">Back</button>
+              <button type="button" onclick="verifyPhoneOtp()" id="btnVerifyOtp" class="w-2/3 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i>
+                <span>Verify & Sign In</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. FORGOT PASSWORD PANEL -->
+        <div id="authPanel-forgot" class="hidden space-y-4">
+          <div class="text-xs text-slate-600">
+            Enter your registered email address and we'll send you a password reset link.
+          </div>
+          <form onsubmit="handleForgotPassword(event)" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+              <div class="relative">
+                <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="email" id="forgotEmail" required placeholder="carlos@jobsite.com" class="w-full text-xs pl-8 pr-3 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50">
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="switchAuthTab('login')" class="w-1/3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl border border-slate-200">Cancel</button>
+              <button type="submit" id="btnForgotSubmit" class="w-2/3 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-2">
+                <i class="fa-solid fa-key"></i>
+                <span>Send Reset Link</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Divider with OR -->
+        <div class="relative my-4">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+          <div class="relative flex justify-center text-[10px] uppercase font-bold tracking-wider"><span class="bg-white px-2 text-slate-400">or connect with</span></div>
+        </div>
+
+        <!-- GOOGLE SIGN-IN BUTTON -->
+        <button type="button" onclick="handleGoogleSignIn()" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition shadow-sm flex items-center justify-center gap-2.5 active:scale-95">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Top Bar -->
+  <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-lg border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3">
+        
+        <!-- Logo & Brand -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="goToSitesList()">
+          <div id="headerBrandLogoWrap" class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black text-xl shadow-md overflow-hidden flex-shrink-0">
+            <i class="fa-solid fa-helmet-safety" id="headerDefaultIcon"></i>
+            <img id="headerCustomLogoImg" src="" alt="Logo" class="hidden w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg tracking-tight text-white" id="headerBrandTitle">SiteFlow</span>
+              <span class="text-[10px] bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded border border-amber-500/30 uppercase tracking-wider hidden sm:inline">Multi-Site Hub</span>
+            </div>
+            <p class="text-xs text-slate-400 font-medium truncate max-w-[160px] sm:max-w-xs" id="headerBrandSubtitle">Simple Jobsite & Resource Command</p>
+          </div>
+        </div>
+
+        <!-- Global Header Controls -->
+        <div class="flex items-center gap-2 sm:gap-2.5">
+          
+          <!-- Site Quick Switcher Dropdown (Visible on Desktop) -->
+          <div class="relative hidden lg:flex items-center gap-2">
+            <label for="globalSiteSelect" class="text-xs font-semibold text-slate-400"><i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>Site:</label>
+            <select id="globalSiteSelect" onchange="handleSiteSelectChange(this.value)" class="bg-slate-800 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer max-w-[190px]">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- All Sites Directory Button -->
+          <button onclick="goToSitesList()" class="inline-flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 sm:px-3 py-2 rounded-lg font-medium transition shadow-sm active:scale-95" title="View all sites">
+            <i class="fa-solid fa-building"></i>
+            <span class="hidden md:inline">Sites</span>
+          </button>
+
+          <!-- Master Directory (Staff, Materials, Tools across all sites) -->
+          <button onclick="goToMasterDirectory('staff')" class="inline-flex items-center gap-1.5 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 sm:px-3 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="All Staff, Materials, and Tools Directory">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span class="hidden sm:inline">Master Hub</span>
+          </button>
+
+          <!-- Quick Log Site Visit Button -->
+          <button onclick="openVisitModal()" class="inline-flex items-center gap-1.5 text-xs bg-sky-500 hover:bg-sky-600 text-white px-2.5 sm:px-3 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="Log a site visit dispatch">
+            <i class="fa-solid fa-van-shuttle"></i>
+            <span class="hidden sm:inline">Log Visit</span>
+          </button>
+
+          <!-- New Site Creation Button (Admin Action) -->
+          <button onclick="openNewSiteModal()" class="inline-flex items-center gap-1.5 text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 sm:px-3 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="Create New Work Site">
+            <i class="fa-solid fa-plus"></i>
+            <span class="hidden sm:inline">New Site</span>
+          </button>
+
+          <!-- App Branding & Custom Icons (Android & iOS) Button -->
+          <button onclick="openBrandingModal()" class="inline-flex items-center gap-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 px-2.5 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="Customize App Name & Android/iOS Icons">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span class="hidden xl:inline">App Icons</span>
+          </button>
+
+          <!-- Current User Profile & Sign Out Button -->
+          <div id="userProfileBadge" class="hidden items-center gap-2 pl-2 border-l border-slate-800">
+            <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center text-xs font-bold" id="userAvatar">
+              U
+            </div>
+            <button onclick="handleSignOut()" class="text-xs bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-300 border border-slate-700 hover:border-rose-800 p-2 rounded-lg transition" title="Sign Out">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 opacity-0 pointer-events-none translate-y-3">
+    <div class="flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border border-slate-700 text-sm">
+      <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+      <span id="toastMessage">Changes saved successfully.</span>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal UI (Never uses browser alert/confirm) -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 border border-slate-200">
+      <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 text-xl">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-900 text-center" id="confirmModalTitle">Are you sure?</h3>
+      <p class="text-xs text-slate-600 text-center mt-2" id="confirmModalDesc">This action cannot be undone.</p>
+      <div class="flex items-center justify-center gap-3 mt-6">
+        <button onclick="closeConfirmModal(false)" class="w-1/2 py-2 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 transition">Cancel</button>
+        <button id="confirmModalBtn" onclick="closeConfirmModal(true)" class="w-1/2 py-2 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 1: ALL SITES OVERVIEW PORTFOLIO                     -->
+  <!-- ======================================================== -->
+  <main id="allSitesView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
+    
+    <!-- Hero / Top Banner -->
+    <div class="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800" id="heroBadgeAppName">SiteFlow Command</span>
+          <span class="text-xs text-slate-400 font-medium">&bull; Multi-Site Construction & Resource Tracker</span>
+          <button onclick="openBrandingModal()" class="text-[11px] font-bold text-amber-600 hover:text-amber-700 underline ml-1 inline-flex items-center gap-1">
+            <i class="fa-solid fa-mobile-screen"></i> Customize App Name & Android/iOS Icons
+          </button>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black text-slate-900">Work Sites Command Center</h1>
+        <p class="text-sm text-slate-600 mt-1 max-w-2xl">
+          Track crew deployment, tools checked out, and materials used across every ongoing project. Click any site below or open the Master Hub to add and edit staff, tools, and materials.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+        <button onclick="goToMasterDirectory('staff')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold px-4 py-3 rounded-xl border border-slate-300 transition active:scale-95">
+          <i class="fa-solid fa-layer-group text-sky-600"></i>
+          <span>Manage All Staff / Tools / Materials</span>
+        </button>
+        <button onclick="openNewSiteModal()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow-md transition active:scale-95">
+          <i class="fa-solid fa-plus text-amber-400"></i>
+          <span>Create New Work Site</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats across all sites (Clickable to jump to Master Hub) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Active Sites</p>
+        <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalSites">0</h3>
+        <p class="text-xs text-emerald-600 font-semibold mt-1"><i class="fa-solid fa-building-circle-check mr-1"></i>Operational</p>
+      </div>
+      <div onclick="goToMasterDirectory('staff')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-emerald-400 transition group">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600">Workers Assigned</p>
+          <i class="fa-solid fa-user-plus text-xs text-slate-300 group-hover:text-emerald-600"></i>
+        </div>
+        <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalStaff">0</h3>
+        <p class="text-xs text-sky-600 font-semibold mt-1" id="statPresentStaff">0 On Shift</p>
+      </div>
+      <div onclick="goToMasterDirectory('tools')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-sky-400 transition group">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-sky-600">Tools Deployed</p>
+          <i class="fa-solid fa-screwdriver-wrench text-xs text-slate-300 group-hover:text-sky-600"></i>
+        </div>
+        <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalTools">0</h3>
+        <p class="text-xs text-slate-500 font-semibold mt-1" id="statToolsInUse">0 in active custody</p>
+      </div>
+      <div onclick="goToMasterDirectory('materials')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition group">
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-amber-600">Materials In Use</p>
+          <i class="fa-solid fa-cubes text-xs text-slate-300 group-hover:text-amber-600"></i>
+        </div>
+        <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalMaterials">0</h3>
+        <p class="text-xs text-amber-600 font-semibold mt-1" id="statLowStockSites">0 critical low</p>
+      </div>
+    </div>
+
+    <!-- Sites Grid Heading & Search Filter -->
+    <div class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <span>Active Sites Portfolio</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700" id="sitesCountPill">0</span>
+        </h2>
+        <div class="relative w-full sm:w-72">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="siteSearchInput" oninput="renderSitesList()" placeholder="Search site name or location..." class="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+        </div>
+      </div>
+
+      <!-- Sites Cards Container -->
+      <div id="sitesGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 2: INDIVIDUAL SITE DEEP DRILLDOWN                   -->
+  <!-- ======================================================== -->
+  <main id="singleSiteView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+
+    <!-- Top Site Info Card -->
+    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <button onclick="goToSitesList()" class="inline-flex items-center gap-1.5 text-xs text-sky-600 hover:text-sky-800 font-bold mb-2">
+            <i class="fa-solid fa-arrow-left"></i> Back to All Sites Overview
+          </button>
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-2xl font-black text-slate-900" id="currentSiteName">Downtown Tower Block B</h1>
+            <span id="currentSiteStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-amber-500"></i>
+            <span id="currentSiteLocation">124 Main Street, Financial District</span>
+            <span class="text-slate-300">|</span>
+            <i class="fa-solid fa-user-tie text-slate-400"></i>
+            <span>Lead: <strong class="text-slate-700" id="currentSiteManager">Carlos Mendez</strong></span>
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="openVisitModal(currentSiteId)" class="inline-flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition shadow-sm active:scale-95">
+            <i class="fa-solid fa-van-shuttle"></i>
+            <span>Log Site Visit</span>
+          </button>
+          <button onclick="openEditSiteModal()" class="inline-flex items-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2.5 rounded-xl font-bold transition">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Edit Site</span>
+          </button>
+          <button onclick="deleteCurrentSite()" class="inline-flex items-center gap-1.5 text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2.5 rounded-xl font-bold transition" title="Delete this site">
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Completion progress bar -->
+      <div>
+        <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1">
+          <span>Project Completion</span>
+          <span id="currentSiteProgressText">68%</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+          <div id="currentSiteProgressBar" class="h-2.5 rounded-full bg-amber-500 transition-all duration-500" style="width: 68%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Site Drilldown Navigation Tabs -->
+    <div class="border-b border-slate-200 flex items-center gap-2 overflow-x-auto pb-1">
+      <button onclick="switchSiteTab('materials')" id="siteTabBtn-materials" class="site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-sm whitespace-nowrap">
+        <i class="fa-solid fa-cubes text-amber-400"></i>
+        <span>Materials Used & Stock</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-200" id="badgeMatCount">0</span>
+      </button>
+
+      <button onclick="switchSiteTab('tools')" id="siteTabBtn-tools" class="site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 whitespace-nowrap">
+        <i class="fa-solid fa-screwdriver-wrench text-sky-500"></i>
+        <span>Tools & Equipment In Use</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600" id="badgeToolCount">0</span>
+      </button>
+
+      <button onclick="switchSiteTab('staff')" id="siteTabBtn-staff" class="site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 whitespace-nowrap">
+        <i class="fa-solid fa-users text-emerald-500"></i>
+        <span>Assigned Staff & Attendance</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600" id="badgeStaffCount">0</span>
+      </button>
+
+      <button onclick="switchSiteTab('visits')" id="siteTabBtn-visits" class="site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 whitespace-nowrap">
+        <i class="fa-solid fa-van-shuttle text-amber-500"></i>
+        <span>Site Visits & Field Dispatches</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600" id="badgeVisitsCount">0</span>
+      </button>
+
+      <button onclick="switchSiteTab('logs')" id="siteTabBtn-logs" class="site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 whitespace-nowrap">
+        <i class="fa-solid fa-book-journal-whills text-purple-500"></i>
+        <span>Site Daily Notes & Journal</span>
+      </button>
+    </div>
+
+    <!-- SUB-TAB 1: MATERIALS -->
+    <div id="siteSub-materials" class="space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Materials Allocated & Consumed on Site</h3>
+          <p class="text-xs text-slate-500">Monitor usage vs remaining allocation and edit material details anytime.</p>
+        </div>
+        <button onclick="openMaterialModal(currentSiteId)" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-plus"></i> Add / Allocate Material
+        </button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
+                <th class="py-3 px-4">Material / Item</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Allocated / Quota</th>
+                <th class="py-3 px-4">Used on Site</th>
+                <th class="py-3 px-4">Remaining Balance</th>
+                <th class="py-3 px-4">Stock Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="siteMaterialsTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="noSiteMaterials" class="hidden p-8 text-center text-slate-400">
+          <i class="fa-solid fa-cubes text-3xl mb-2 text-slate-300"></i>
+          <p class="text-xs font-medium">No materials recorded for this site yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-TAB 2: TOOLS & EQUIPMENT -->
+    <div id="siteSub-tools" class="hidden space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Tools & Heavy Machinery Deployed</h3>
+          <p class="text-xs text-slate-500">Check tool assignment, serial number, and edit condition or custody on-site.</p>
+        </div>
+        <button onclick="openToolModal(currentSiteId)" class="text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-plus"></i> Add Tool to Site
+        </button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
+                <th class="py-3 px-4">Tool / Equipment</th>
+                <th class="py-3 px-4">Serial / Tag</th>
+                <th class="py-3 px-4">Qty</th>
+                <th class="py-3 px-4">Current Status</th>
+                <th class="py-3 px-4">Worker / Custody</th>
+                <th class="py-3 px-4">Condition</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="siteToolsTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="noSiteTools" class="hidden p-8 text-center text-slate-400">
+          <i class="fa-solid fa-screwdriver-wrench text-3xl mb-2 text-slate-300"></i>
+          <p class="text-xs font-medium">No tools currently assigned to this work site.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-TAB 3: STAFF & CREW -->
+    <div id="siteSub-staff" class="hidden space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Work Crew & Tradespeople on Site</h3>
+          <p class="text-xs text-slate-500">Track worker roster, trades, shift attendance, and edit phone or emergency contacts.</p>
+        </div>
+        <button onclick="openStaffModal(currentSiteId)" class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-user-plus"></i> Add Worker to Site
+        </button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
+                <th class="py-3 px-4">Worker Name</th>
+                <th class="py-3 px-4">Trade / Specialization</th>
+                <th class="py-3 px-4">Contact Phone</th>
+                <th class="py-3 px-4">Emergency Contact</th>
+                <th class="py-3 px-4 text-center">Attendance Today</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="siteStaffTableBody" class="divide-y divide-slate-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="noSiteStaff" class="hidden p-8 text-center text-slate-400">
+          <i class="fa-solid fa-users-slash text-3xl mb-2 text-slate-300"></i>
+          <p class="text-xs font-medium">No workers currently registered to this work site.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-TAB 4: SITE VISITS & FIELD DISPATCHES -->
+    <div id="siteSub-visits" class="hidden space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Site Visits, Inspections & Dispatches</h3>
+          <p class="text-xs text-slate-500">Complete record of who visited, tools carried, and exact materials used/delivered.</p>
+        </div>
+        <button onclick="openVisitModal(currentSiteId)" class="text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-plus"></i> Record New Visit
+        </button>
+      </div>
+
+      <!-- Visits Feed Container -->
+      <div id="siteVisitsList" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="noSiteVisits" class="hidden bg-white rounded-xl p-8 text-center text-slate-400 border border-slate-200">
+        <i class="fa-solid fa-van-shuttle text-3xl mb-2 text-slate-300"></i>
+        <p class="text-xs font-medium">No site visits or dispatches logged yet for this site.</p>
+      </div>
+    </div>
+
+    <!-- SUB-TAB 5: DAILY LOGS -->
+    <div id="siteSub-logs" class="hidden space-y-4">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Site Daily Journal & Superintendent Logs</h3>
+          <p class="text-xs text-slate-500">Record deliveries, engineer visits, safety briefings, and weather delays.</p>
+        </div>
+        <button onclick="openLogModal()" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
+          <i class="fa-solid fa-plus"></i> Add Note
+        </button>
+      </div>
+
+      <div id="siteDailyLogsList" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="noSiteLogs" class="hidden bg-white rounded-xl p-8 text-center text-slate-400 border border-slate-200">
+        <i class="fa-solid fa-book-open text-3xl mb-2 text-slate-300"></i>
+        <p class="text-xs font-medium">No notes recorded yet today for this site.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 3: MASTER DIRECTORY (ALL STAFF, MATERIALS & TOOLS)  -->
+  <!-- ======================================================== -->
+  <main id="masterDirectoryView" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 flex-grow w-full space-y-4 sm:space-y-6">
+    
+    <!-- Top Mobile-Friendly Header & Back Button -->
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <button onclick="goToSitesList()" class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 hover:text-slate-950 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl transition shadow-sm active:scale-95">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Sites</span>
+      </button>
+
+      <!-- Direct Quick-Add Buttons in Master Hub -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openStaffModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>+ Add Staff</span>
+        </button>
+        <button onclick="openMaterialModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-cubes"></i>
+          <span>+ Add Material</span>
+        </button>
+        <button onclick="openToolModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          <span>+ Add Tool</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Title & Segment Tabs for Phone/Tablet -->
+    <div class="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-cubes-stacked text-amber-500"></i>
+            <span>Master Resource Directory</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Add, edit, or reassign any worker, tool, or material across all active job sites.</p>
+        </div>
+      </div>
+
+      <!-- Segment Navigation Pills (Touch-optimized for phone) -->
+      <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
+        <button onclick="switchMasterTab('staff')" id="masterTabBtn-staff" class="master-tab flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow-sm active:scale-95">
+          <i class="fa-solid fa-users text-emerald-600 text-xs sm:text-sm"></i>
+          <span>Staff (<span id="masterStaffCount">0</span>)</span>
+        </button>
+        <button onclick="switchMasterTab('materials')" id="masterTabBtn-materials" class="master-tab flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900 active:scale-95">
+          <i class="fa-solid fa-cubes text-amber-600 text-xs sm:text-sm"></i>
+          <span>Materials (<span id="masterMaterialsCount">0</span>)</span>
+        </button>
+        <button onclick="switchMasterTab('tools')" id="masterTabBtn-tools" class="master-tab flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-bold transition text-slate-600 hover:text-slate-900 active:scale-95">
+          <i class="fa-solid fa-screwdriver-wrench text-sky-600 text-xs sm:text-sm"></i>
+          <span>Tools (<span id="masterToolsCount">0</span>)</span>
+        </button>
+      </div>
+
+      <!-- Search & Site Filter Controls -->
+      <div class="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+        <div class="relative w-full sm:flex-grow">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="masterSearchInput" oninput="renderMasterCurrentTab()" placeholder="Quick search by name, trade, category or tool..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+        </div>
+        <div class="w-full sm:w-60 flex-shrink-0">
+          <select id="masterSiteFilter" onchange="renderMasterCurrentTab()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg py-2 px-2.5 font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer">
+            <option value="ALL">All Work Sites (Unified)</option>
+            <!-- Populated dynamically with each site -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- MASTER PANEL 1: ALL STAFF -->
+    <div id="masterSection-staff" class="space-y-3">
+      <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+        <span>Use Edit (<i class="fa-solid fa-pen"></i>) on any card to modify worker details or reassign site</span>
+        <span class="font-semibold text-emerald-700" id="masterStaffPresentRatio">0 on duty</span>
+      </div>
+      <div id="masterStaffList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="noMasterStaff" class="hidden bg-white rounded-xl p-8 text-center text-slate-400 border border-slate-200">
+        <i class="fa-solid fa-user-slash text-3xl mb-2 text-slate-300"></i>
+        <p class="text-xs font-semibold text-slate-600">No staff found matching current criteria.</p>
+      </div>
+    </div>
+
+    <!-- MASTER PANEL 2: ALL MATERIALS -->
+    <div id="masterSection-materials" class="hidden space-y-3">
+      <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+        <span>Tap Edit (<i class="fa-solid fa-pen"></i>) to change material quota, category, unit, or site</span>
+        <span class="font-semibold text-amber-700" id="masterMaterialsLowRatio">0 low alert</span>
+      </div>
+      <div id="masterMaterialsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="noMasterMaterials" class="hidden bg-white rounded-xl p-8 text-center text-slate-400 border border-slate-200">
+        <i class="fa-solid fa-cubes text-3xl mb-2 text-slate-300"></i>
+        <p class="text-xs font-semibold text-slate-600">No materials found matching current criteria.</p>
+      </div>
+    </div>
+
+    <!-- MASTER PANEL 3: ALL TOOLS -->
+    <div id="masterSection-tools" class="hidden space-y-3">
+      <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+        <span>Tap Edit (<i class="fa-solid fa-pen"></i>) to update tool serial, quantity, custody, or site</span>
+        <span class="font-semibold text-sky-700" id="masterToolsInUseRatio">0 in use</span>
+      </div>
+      <div id="masterToolsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="noMasterTools" class="hidden bg-white rounded-xl p-8 text-center text-slate-400 border border-slate-200">
+        <i class="fa-solid fa-screwdriver-wrench text-3xl mb-2 text-slate-300"></i>
+        <p class="text-xs font-semibold text-slate-600">No tools found matching current criteria.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODALS (ADMIN & RESOURCE CONTROLS)                       -->
+  <!-- ======================================================== -->
+
+  <!-- MODAL 1: NEW / EDIT SITE -->
+  <div id="siteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2" id="siteModalTitle">
+          <i class="fa-solid fa-building text-amber-400"></i> Create New Work Site
+        </h3>
+        <button onclick="closeModal('siteModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="siteForm" onsubmit="saveSite(event)" class="p-6 space-y-4">
+        <input type="hidden" id="formSiteId">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site / Project Name *</label>
+          <input type="text" id="formSiteName" required placeholder="e.g. Skyline Residency Phase 2" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Physical Location / Address *</label>
+          <input type="text" id="formSiteLocation" required placeholder="e.g. Sector 44, North Highway Gate" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Site Supervisor / Lead *</label>
+            <input type="text" id="formSiteManager" required placeholder="e.g. Carlos Mendez" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status *</label>
+            <select id="formSiteStatus" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <option value="Active">Active Working</option>
+              <option value="Pending">Permit / Pending</option>
+              <option value="Near Completion">Finishing Up</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Completion Progress (%)</label>
+          <input type="number" id="formSiteProgress" min="0" max="100" value="25" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('siteModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs font-bold shadow-sm">Save Work Site</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: MATERIAL (ALLOCATE / EDIT / REASSIGN SITE) -->
+  <div id="materialModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2" id="materialModalTitle">
+          <i class="fa-solid fa-cubes-stacked text-amber-400"></i> Manage Site Material
+        </h3>
+        <button onclick="closeModal('materialModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="materialForm" onsubmit="saveMaterial(event)" class="p-6 space-y-4">
+        <input type="hidden" id="matId">
+        <input type="hidden" id="matOriginalSiteId">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
+          <select id="matSiteSelect" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50 font-semibold">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Material Name *</label>
+          <input type="text" id="matName" required placeholder="e.g. Portland Cement (50kg bags)" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Category *</label>
+            <select id="matCategory" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <option value="Binding">Binding (Cement, Mortar)</option>
+              <option value="Aggregates">Aggregates (Sand, Gravel)</option>
+              <option value="Metals">Metals & Rebar</option>
+              <option value="Masonry">Masonry (Bricks, Blocks)</option>
+              <option value="Electrical & Plumbing">Electrical & Plumbing</option>
+              <option value="Finishing">Finishing / Paint / Tiles</option>
+              <option value="Timber & Wood">Timber & Formwork</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Unit of Measure *</label>
+            <input type="text" id="matUnit" required placeholder="e.g. Bags, Tons, Bundles" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Total Allocated / Stock *</label>
+            <input type="number" id="matTotal" required min="0" step="any" placeholder="300" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Used on Site So Far</label>
+            <input type="number" id="matUsed" required min="0" step="any" value="0" placeholder="50" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Min Threshold Alert (Remaining)</label>
+          <input type="number" id="matMinAlert" required min="0" step="any" value="20" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          <p class="text-[10px] text-slate-400 mt-0.5">Triggers a warning when remaining stock hits this level.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('materialModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs font-bold shadow-sm">Save Material</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: LOG USED MATERIAL DIRECTLY -->
+  <div id="useMaterialModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6 border border-slate-200">
+      <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mb-3">
+        <i class="fa-solid fa-boxes-packing text-lg"></i>
+      </div>
+      <h3 class="text-sm font-bold text-slate-900" id="useMatModalTitle">Consume Material</h3>
+      <p class="text-xs text-slate-500 mt-1" id="useMatModalSub">How much quantity was used today on-site?</p>
+      
+      <form id="useMaterialForm" onsubmit="submitUseMaterial(event)" class="mt-4 space-y-3">
+        <input type="hidden" id="useMatId">
+        <input type="hidden" id="useMatSiteId">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Quantity Used Just Now</label>
+          <input type="number" id="useMatAmount" min="0.1" step="any" required placeholder="e.g. 15" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" onclick="closeModal('useMaterialModal')" class="px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold">Apply Usage</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: TOOL REGISTRATION & EDIT -->
+  <div id="toolModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2" id="toolModalTitle">
+          <i class="fa-solid fa-screwdriver-wrench text-sky-400"></i> Assign Equipment to Site
+        </h3>
+        <button onclick="closeModal('toolModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="toolForm" onsubmit="saveTool(event)" class="p-6 space-y-4">
+        <input type="hidden" id="toolId">
+        <input type="hidden" id="toolOriginalSiteId">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
+          <select id="toolSiteSelect" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 font-semibold">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tool / Machine Name *</label>
+          <input type="text" id="toolName" required placeholder="e.g. Heavy Rotary Hammer, Concrete Mixer" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Serial / Asset Tag</label>
+            <input type="text" id="toolSerial" placeholder="e.g. TL-809" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Quantity (Units) *</label>
+            <input type="number" id="toolQuantity" min="1" value="1" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status on Site *</label>
+            <select id="toolStatus" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <option value="In Use">In Active Use</option>
+              <option value="Available">Depot / Standby</option>
+              <option value="Under Repair">Under Repair</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Worker Custody</label>
+            <input type="text" id="toolAssignedTo" placeholder="e.g. Dave Reynolds" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Condition & Inspection Notes</label>
+          <input type="text" id="toolCondition" placeholder="e.g. Serviced last Monday, safety trigger OK" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('toolModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold shadow-sm">Save Tool</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: STAFF REGISTRATION & EDIT -->
+  <div id="staffModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2" id="staffModalTitle">
+          <i class="fa-solid fa-user-plus text-emerald-400"></i> Register Worker to Site
+        </h3>
+        <button onclick="closeModal('staffModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="staffForm" onsubmit="saveStaff(event)" class="p-6 space-y-4">
+        <input type="hidden" id="staffId">
+        <input type="hidden" id="staffOriginalSiteId">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
+          <select id="staffSiteSelect" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-slate-50 font-semibold">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Full Worker Name *</label>
+          <input type="text" id="staffFullName" required placeholder="e.g. Marcus Vance" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Trade / Role *</label>
+            <select id="staffTrade" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+              <option value="Site Supervisor">Site Supervisor</option>
+              <option value="Mason / Bricklayer">Mason / Bricklayer</option>
+              <option value="Electrician">Electrician</option>
+              <option value="Plumber">Plumber</option>
+              <option value="Carpenter">Carpenter</option>
+              <option value="Welder">Welder</option>
+              <option value="Crane / Equipment Operator">Equipment Operator</option>
+              <option value="General Laborer">General Laborer</option>
+              <option value="Safety Officer">Safety Officer</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Shift Attendance Today</label>
+            <select id="staffPresent" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+              <option value="true">Present / Working</option>
+              <option value="false">Absent / Off Duty</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Worker Phone *</label>
+            <input type="tel" id="staffPhone" required placeholder="+1 555-0199" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Emergency Contact</label>
+            <input type="text" id="staffEmergency" placeholder="Name & Phone" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('staffModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm">Save Staff Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: LOG ENTRY -->
+  <div id="logModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-pen-nib text-amber-400"></i> New Site Daily Note
+        </h3>
+        <button onclick="closeModal('logModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="logForm" onsubmit="saveLog(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Category *</label>
+          <select id="logCategory" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-slate-700 focus:outline-none bg-white">
+            <option value="Progress">Progress & Milestone</option>
+            <option value="Material Delivery">Material Delivery Received</option>
+            <option value="Safety & Weather">Safety & Weather Alert</option>
+            <option value="Engineer Inspection">Official Site Inspection</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Journal Note Details *</label>
+          <textarea id="logText" rows="3" required placeholder="e.g. Received shipment of 80 bags cement. Foundation slab poured on Block C." class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-slate-700 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('logModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-sm">Post Journal Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 7: RECORD SITE VISIT (WHO GOES, TOOLS, MATERIALS & QUANTITY) -->
+  <div id="visitModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden border border-slate-200 my-8">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-van-shuttle text-amber-400"></i> Record Site Visit & Dispatch
+        </h3>
+        <button onclick="closeModal('visitModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <form id="visitForm" onsubmit="saveSiteVisit(event)" class="p-6 space-y-4 text-xs max-h-[80vh] overflow-y-auto">
+        <input type="hidden" id="visitId">
+
+        <!-- Target Work Site -->
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Target Work Site *</label>
+          <select id="visitTargetSite" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white font-medium" onchange="updateVisitModalResourceLists(this.value)">
+            <!-- Populated via JS -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Visit Purpose / Task *</label>
+            <select id="visitPurpose" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <option value="Material Delivery & Restock">Material Delivery & Restock</option>
+              <option value="Tools & Equipment Dispatch">Tools & Equipment Dispatch</option>
+              <option value="Quality & Engineering Inspection">Quality & Engineering Inspection</option>
+              <option value="Safety & Audit Compliance">Safety & Audit Compliance</option>
+              <option value="Routine Construction Work">Routine Construction Work</option>
+              <option value="Specialist Sub-Contractor Visit">Specialist Sub-Contractor Visit</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Date & Time *</label>
+            <input type="datetime-local" id="visitDateTime" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- WHO GOES SECTION -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-users text-emerald-600"></i> Who is Visiting? (Staff / Visitors) *
+            </span>
+            <span class="text-[10px] text-slate-500">Pick from registered staff or type visitor</span>
+          </div>
+          <div>
+            <input type="text" id="visitVisitors" required placeholder="e.g. Carlos Mendez (Supervisor), Dave Reynolds, Inspector Wilson" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+          </div>
+          <div id="quickStaffChips" class="flex flex-wrap gap-1.5 pt-1">
+            <!-- Staff chips to quickly add to visitors -->
+          </div>
+        </div>
+
+        <!-- WHICH TOOLS SECTION -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-screwdriver-wrench text-sky-600"></i> Which Tools & Equipment Carried / Dispatched?
+            </span>
+            <span class="text-[10px] text-slate-500">Optional</span>
+          </div>
+          <input type="text" id="visitTools" placeholder="e.g. Rotary Hammer Drill (x2), Laser Transit Level, Generator" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+          <div id="quickToolChips" class="flex flex-wrap gap-1.5 pt-1">
+            <!-- Tool chips for easy click-to-add -->
+          </div>
+        </div>
+
+        <!-- WHICH MATERIALS & EXACT AMOUNT SECTION -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-cubes text-amber-600"></i> Materials & Exact Amount Delivered / Used
+            </span>
+            <span class="text-[10px] text-slate-500">Specify quantity & units</span>
+          </div>
+          <input type="text" id="visitMaterials" placeholder="e.g. 50 Bags Portland Cement, 10 bundles #4 Rebar, 5 Tons Sand" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+          
+          <div class="flex items-center gap-2 pt-1 text-[11px] text-slate-600">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="visitAutoUpdateStock" class="rounded text-amber-500 focus:ring-amber-400">
+              <span class="font-semibold text-slate-700">Auto-increment material used on this site if matched</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- NOTES & SIGN OFF -->
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Visit Notes / Work Done / Observations</label>
+          <textarea id="visitNotes" rows="2" placeholder="e.g. Verified steel reinforcing rebar grid for Block B slab pour. Gate pass signed." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-slate-700 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('visitModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold shadow-sm">Save & Log Visit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 8: APP BRANDING & CUSTOM ANDROID / iOS ICONS -->
+  <div id="brandingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden border border-slate-200 my-8">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <h3 class="font-bold text-sm flex items-center gap-2">
+          <i class="fa-solid fa-mobile-screen-button text-amber-400"></i> App Name & Custom Icons (Android & iOS)
+        </h3>
+        <button onclick="closeModal('brandingModal')" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <form id="brandingForm" onsubmit="saveBrandingSettings(event)" class="p-6 space-y-5 text-xs max-h-[82vh] overflow-y-auto">
+        
+        <!-- Simple App Name & Tagline -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">Simple App Name *</label>
+            <input type="text" id="brandAppNameInput" required placeholder="SiteFlow" oninput="updateLiveIconPreview()" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none font-bold text-slate-900">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">App Subtitle / Tagline</label>
+            <input type="text" id="brandAppSubtitleInput" placeholder="Simple Jobsite & Resource Command" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Preset Built-in High-Contrast Icon Generator -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 uppercase tracking-wider">Quick Preset Icon Themes (Generates iOS & Android PNG)</span>
+            <span class="text-[10px] text-slate-500">Tap to apply</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="applyPresetAppIcon('#f59e0b', '#0f172a', 'SF')" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-black text-xs flex items-center gap-1.5 shadow-sm hover:opacity-90">
+              <span class="w-4 h-4 rounded bg-slate-950 text-amber-400 flex items-center justify-center text-[9px]">SF</span> Amber Safety
+            </button>
+            <button type="button" onclick="applyPresetAppIcon('#0284c7', '#ffffff', 'SF')" class="px-3 py-1.5 rounded-lg bg-sky-600 text-white font-black text-xs flex items-center gap-1.5 shadow-sm hover:opacity-90">
+              <span class="w-4 h-4 rounded bg-white text-sky-700 flex items-center justify-center text-[9px]">SF</span> Blueprint Blue
+            </button>
+            <button type="button" onclick="applyPresetAppIcon('#059669', '#ffffff', 'SF')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center gap-1.5 shadow-sm hover:opacity-90">
+              <span class="w-4 h-4 rounded bg-white text-emerald-700 flex items-center justify-center text-[9px]">SF</span> Crew Emerald
+            </button>
+            <button type="button" onclick="applyPresetAppIcon('#0f172a', '#fbbf24', 'SF')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm hover:opacity-90">
+              <span class="w-4 h-4 rounded bg-amber-400 text-slate-950 flex items-center justify-center text-[9px]">SF</span> Dark Steel
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Android & iOS Icon Upload / URL -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Android Custom Icon -->
+          <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5 bg-white">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-brands fa-android text-emerald-500 text-base"></i> Android App Icon
+              </span>
+              <span class="text-[10px] text-slate-400">192x192 / 512x512</span>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload PNG/JPG Icon</label>
+              <input type="file" accept="image/*" onchange="handleIconFileUpload(event, 'android')" class="w-full text-[11px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Or Image URL</label>
+              <input type="text" id="androidIconUrlInput" oninput="updateLiveIconPreview()" placeholder="https://..." class="w-full border border-slate-300 rounded-lg p-2 text-[11px] focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            </div>
+          </div>
+
+          <!-- iOS Custom Icon -->
+          <div class="border border-slate-200 rounded-xl p-3.5 space-y-2.5 bg-white">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-brands fa-apple text-slate-800 text-base"></i> iOS Home Screen Icon
+              </span>
+              <span class="text-[10px] text-slate-400">180x180 Apple Touch</span>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload PNG/JPG Icon</label>
+              <input type="file" accept="image/*" onchange="handleIconFileUpload(event, 'ios')" class="w-full text-[11px] text-slate-600 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-slate-100 file:text-slate-800 hover:file:bg-slate-200 cursor-pointer">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Or Image URL</label>
+              <input type="text" id="iosIconUrlInput" oninput="updateLiveIconPreview()" placeholder="https://..." class="w-full border border-slate-300 rounded-lg p-2 text-[11px] focus:ring-2 focus:ring-slate-700 focus:outline-none">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Side-by-Side Live Home Screen Previews (Android & iOS) -->
+        <div class="bg-slate-900 text-white p-4 rounded-2xl border border-slate-800">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center mb-3">Live Mobile Home Screen Preview</p>
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Android Launcher Preview -->
+            <div class="flex flex-col items-center justify-center bg-slate-800/70 rounded-xl p-3 border border-slate-700/60">
+              <span class="text-[10px] text-emerald-400 font-semibold mb-2 flex items-center gap-1">
+                <i class="fa-brands fa-android"></i> Android Adaptive
+              </span>
+              <div class="w-16 h-16 rounded-full bg-amber-500 shadow-lg overflow-hidden flex items-center justify-center border-2 border-white/10">
+                <img id="previewAndroidImg" src="" alt="Android Icon" class="w-full h-full object-cover">
+              </div>
+              <span id="previewAndroidLabel" class="text-[11px] font-medium text-slate-200 mt-2 truncate max-w-[110px]">SiteFlow</span>
+            </div>
+
+            <!-- iOS Springboard Preview -->
+            <div class="flex flex-col items-center justify-center bg-slate-800/70 rounded-xl p-3 border border-slate-700/60">
+              <span class="text-[10px] text-sky-300 font-semibold mb-2 flex items-center gap-1">
+                <i class="fa-brands fa-apple"></i> iOS Home Screen
+              </span>
+              <div class="w-16 h-16 ios-squircle bg-amber-500 shadow-lg overflow-hidden flex items-center justify-center border border-white/10">
+                <img id="previewIosImg" src="" alt="iOS Icon" class="w-full h-full object-cover">
+              </div>
+              <span id="previewIosLabel" class="text-[11px] font-medium text-slate-200 mt-2 truncate max-w-[110px]">SiteFlow</span>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-400 text-center mt-3">
+            <i class="fa-solid fa-circle-info text-amber-400 mr-1"></i>
+            To install on phone: Tap <strong>"Add to Home Screen"</strong> in Safari (iOS) or Chrome (Android).
+          </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('brandingModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-lg text-xs font-bold shadow-sm">Save App Name & Icons</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span><strong id="footerBrandName">SiteFlow</strong> Multi-Site Enterprise &bull; Single-File Construction & Jobsite Manager</span>
+      <div class="flex items-center gap-3">
+        <button onclick="openBrandingModal()" class="text-sky-600 hover:underline font-semibold">Customize App Name & Icons (iOS/Android)</button>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-400">Cloud & Local Auto-Sync</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT STATE ENGINE & ADMIN LOGIC                    -->
+  <!-- ======================================================== -->
+  <!-- Firebase SDK Modules -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      signInWithPopup,
+      GoogleAuthProvider,
+      signInWithPhoneNumber,
+      RecaptchaVerifier,
+      updateProfile,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // User's Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_4DzalQb7qFRHcFVHW4y8edg9W6obq7s",
+      authDomain: "job-site-50696.firebaseapp.com",
+      projectId: "job-site-50696",
+      storageBucket: "job-site-50696.firebasestorage.app",
+      messagingSenderId: "400301598709",
+      appId: "1:400301598709:web:3622eed5c431cb8a48e2bc",
+      measurementId: "G-1D57THRWV0"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Helper: Generate crisp Canvas DataURL Icon for default / presets (works for both iOS Apple Touch & Android Manifest)
+    function generateCanvasAppIcon(bgColor = '#f59e0b', textColor = '#0f172a', label = 'SF') {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Background fill
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Subtle inner border ring
+      ctx.strokeStyle = textColor;
+      ctx.globalAlpha = 0.15;
+      ctx.lineWidth = 24;
+      ctx.strokeRect(36, 36, 440, 440);
+      ctx.globalAlpha = 1.0;
+
+      // Hardhat / bold initials typography
+      ctx.fillStyle = textColor;
+      ctx.font = '900 225px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText((label || 'SF').slice(0, 3).toUpperCase(), 256, 270);
+
+      return canvas.toDataURL('image/png');
+    }
+
+    const defaultGeneratedIcon = generateCanvasAppIcon('#f59e0b', '#0f172a', 'SF');
+
+    // Default Branding State (Simple Name + Custom Android & iOS Icons)
+    const defaultBranding = {
+      appName: 'SiteFlow',
+      appSubtitle: 'Simple Jobsite & Resource Command',
+      androidIcon: defaultGeneratedIcon,
+      iosIcon: defaultGeneratedIcon
+    };
+
+    let appBranding = JSON.parse(localStorage.getItem('sm_app_branding')) || defaultBranding;
+
+    // Initial Seed Data for Multi-Site Architecture
+    const initialSitesData = [
+      {
+        id: 'site-1',
+        name: 'Downtown Tower Block B',
+        location: '124 Main Street, Financial District',
+        manager: 'Carlos Mendez',
+        status: 'Active',
+        progress: 68,
+        materials: [
+          { id: 'm1', name: 'Portland Cement (50kg bags)', category: 'Binding', unit: 'Bags', total: 400, used: 260, minAlert: 60 },
+          { id: 'm2', name: 'River Sand (Coarse)', category: 'Aggregates', unit: 'Cubic Yards', total: 60, used: 45, minAlert: 20 },
+          { id: 'm3', name: 'Steel Rebar (#4 1/2")', category: 'Metals', unit: 'Bundles', total: 30, used: 22, minAlert: 10 },
+          { id: 'm4', name: 'Standard Red Clay Bricks', category: 'Masonry', unit: 'Pallets', total: 50, used: 46, minAlert: 8 }
+        ],
+        tools: [
+          { id: 't1', name: 'Rotary Hammer Drill SDS-Plus', serial: 'RHD-109', quantity: 3, status: 'In Use', assignedTo: 'Dave Reynolds', condition: 'Calibrated & Oiled' },
+          { id: 't2', name: 'Portable Concrete Mixer 9 cu ft', serial: 'MIX-02', quantity: 1, status: 'In Use', assignedTo: 'Concrete Team 1', condition: 'Clean drum' },
+          { id: 't3', name: 'Laser Transit Level & Tripod', serial: 'LL-44', quantity: 2, status: 'Available', assignedTo: 'Site Shed A', condition: 'Operational' },
+          { id: 't4', name: 'Plate Compactor 6.5HP', serial: 'PC-01', quantity: 1, status: 'Under Repair', assignedTo: 'Workshop', condition: 'Belt replacement' }
+        ],
+        staff: [
+          { id: 's1', name: 'Carlos Mendez', trade: 'Site Supervisor', phone: '+1 555-0144', emergency: 'Maria Mendez (+1 555-0145)', present: true },
+          { id: 's2', name: 'Dave Reynolds', trade: 'Mason / Bricklayer', phone: '+1 555-0199', emergency: 'Sarah Reynolds (+1 555-0198)', present: true },
+          { id: 's3', name: 'Arun Patel', trade: 'Electrician', phone: '+1 555-0182', emergency: 'Kavita (+1 555-0180)', present: true },
+          { id: 's4', name: 'Marcus Vance', trade: 'Welder', phone: '+1 555-0211', emergency: 'Site Office', present: false },
+          { id: 's5', name: 'Liam O\'Connor', trade: 'Crane / Equipment Operator', phone: '+1 555-0322', emergency: 'Emma (+1 555-0329)', present: true }
+        ],
+        logs: [
+          { id: 'l1', category: 'Material Delivery', text: 'Received 80 bags of Portland Cement. Stacked in secure dry storage Shed A.', time: '08:30 AM Today' },
+          { id: 'l2', category: 'Engineer Inspection', text: 'Municipal inspector signed off on Ground Level foundation rebar grid.', time: '11:15 AM Today' }
+        ],
+        visits: [
+          {
+            id: 'v1',
+            siteId: 'site-1',
+            purpose: 'Material Delivery & Restock',
+            date: '2026-10-25T08:30',
+            visitors: 'Carlos Mendez (Supervisor), Driver Tom Henderson',
+            tools: 'Pallet Jack #2, Safety Straps',
+            materials: '80 Bags Portland Cement, 5 Bundles #4 Rebar',
+            notes: 'All items unloaded safely at Shed A storage and verified against invoice.',
+            status: 'Completed'
+          },
+          {
+            id: 'v2',
+            siteId: 'site-1',
+            purpose: 'Quality & Engineering Inspection',
+            date: '2026-10-25T11:00',
+            visitors: 'Carlos Mendez, Municipal Eng. David Wilson',
+            tools: 'Laser Transit Level & Tripod, Concrete Test Hammer',
+            materials: 'Sample Test Cylinders (x3)',
+            notes: 'Level inspection passed. Foundation slab clearance granted for pour.',
+            status: 'Completed'
+          }
+        ]
+      },
+      {
+        id: 'site-2',
+        name: 'Harbor Marina Residential Complex',
+        location: 'Pier 7, Waterfront Avenue',
+        manager: 'Elena Rostova',
+        status: 'Active',
+        progress: 34,
+        materials: [
+          { id: 'm5', name: 'Marine Grade Concrete Sealant', category: 'Binding', unit: 'Barrels', total: 30, used: 8, minAlert: 10 },
+          { id: 'm6', name: 'Structural Steel I-Beams', category: 'Metals', unit: 'Pieces', total: 120, used: 64, minAlert: 20 },
+          { id: 'm7', name: 'Crushed Basalt Gravel', category: 'Aggregates', unit: 'Tons', total: 80, used: 68, minAlert: 25 }
+        ],
+        tools: [
+          { id: 't5', name: 'Submersible Sump Pump 3HP', serial: 'PMP-88', quantity: 2, status: 'In Use', assignedTo: 'Basement Drainage Team', condition: 'Running continuous' },
+          { id: 't6', name: 'Heavy Arc Welder 250A', serial: 'WLD-09', quantity: 2, status: 'In Use', assignedTo: 'Jake Miller', condition: 'Good condition' }
+        ],
+        staff: [
+          { id: 's6', name: 'Elena Rostova', trade: 'Site Supervisor', phone: '+1 555-0811', emergency: 'Site Office', present: true },
+          { id: 's7', name: 'Jake Miller', trade: 'Welder', phone: '+1 555-0722', emergency: 'Lisa Miller', present: true },
+          { id: 's8', name: 'Samuel Gomez', trade: 'General Laborer', phone: '+1 555-0633', emergency: 'Maria Gomez', present: true },
+          { id: 's9', name: 'Brian Cho', trade: 'Plumber', phone: '+1 555-0944', emergency: 'Grace Cho', present: false }
+        ],
+        logs: [
+          { id: 'l3', category: 'Safety & Weather', text: 'High coastal winds recorded. Crane operations paused for safety precaution.', time: '09:00 AM Today' }
+        ],
+        visits: [
+          {
+            id: 'v3',
+            siteId: 'site-2',
+            purpose: 'Tools & Equipment Dispatch',
+            date: '2026-10-24T14:00',
+            visitors: 'Elena Rostova, Equipment Tech Ryan Davis',
+            tools: 'Submersible Sump Pump 3HP, 50m Heavy Hose',
+            materials: '4 Barrels Marine Grade Sealant',
+            notes: 'Installed pump in basement area ahead of high tide forecast.',
+            status: 'Completed'
+          }
+        ]
+      },
+      {
+        id: 'site-3',
+        name: 'Expressway Flyover Extension',
+        location: 'Highway Interchange Exit 12',
+        manager: 'David Kalu',
+        status: 'Near Completion',
+        progress: 88,
+        materials: [
+          { id: 'm8', name: 'Asphalt Binder Mix', category: 'Aggregates', unit: 'Tons', total: 200, used: 180, minAlert: 30 },
+          { id: 'm9', name: 'Galvanized Crash Guardrails', category: 'Metals', unit: 'Sections (3m)', total: 90, used: 75, minAlert: 15 }
+        ],
+        tools: [
+          { id: 't7', name: 'Tandem Road Roller 10-Ton', serial: 'ROL-01', quantity: 1, status: 'In Use', assignedTo: 'Paving Division', condition: 'Regular servicing done' }
+        ],
+        staff: [
+          { id: 's10', name: 'David Kalu', trade: 'Site Supervisor', phone: '+1 555-0451', emergency: 'Grace Kalu', present: true },
+          { id: 's11', name: 'Robert King', trade: 'Crane / Equipment Operator', phone: '+1 555-0488', emergency: 'Office', present: true }
+        ],
+        logs: [
+          { id: 'l4', category: 'Progress', text: 'Top asphalt coat laid along East Ramp. Line marking scheduled tomorrow.', time: '14:20 PM Today' }
+        ],
+        visits: []
+      }
+    ];
+
+    // Global State
+    let sites = initialSitesData;
+    let currentSiteId = sites[0]?.id || null;
+    window.currentSiteId = currentSiteId;
+    let activeMasterTab = 'staff';
+    let pendingConfirmAction = null;
+    let currentUser = null;
+    let confirmationResultObj = null;
+
+    function setActiveSiteId(id) {
+      currentSiteId = id;
+      window.currentSiteId = id;
+      if (id) {
+        localStorage.setItem('sm_active_site_id', id);
+      }
+    }
+
+    // ========================================================
+    // DYNAMIC APP BRANDING & ANDROID / iOS ICON ENGINE
+    // ========================================================
+    function applyBrandingToDOM() {
+      const name = appBranding.appName || 'SiteFlow';
+      const subtitle = appBranding.appSubtitle || 'Simple Jobsite & Resource Command';
+      const androidIcon = appBranding.androidIcon || defaultGeneratedIcon;
+      const iosIcon = appBranding.iosIcon || defaultGeneratedIcon;
+
+      // Update titles and text elements
+      document.title = `${name} - Construction & Jobsite Manager`;
+      const metaAppName = document.getElementById('metaAppName');
+      const metaAppleTitle = document.getElementById('metaAppleTitle');
+      if (metaAppName) metaAppName.setAttribute('content', name);
+      if (metaAppleTitle) metaAppleTitle.setAttribute('content', name);
+
+      const headerTitle = document.getElementById('headerBrandTitle');
+      const headerSubtitle = document.getElementById('headerBrandSubtitle');
+      const authTitle = document.getElementById('authBrandTitle');
+      const authSubtitle = document.getElementById('authBrandSubtitle');
+      const heroBadge = document.getElementById('heroBadgeAppName');
+      const footerName = document.getElementById('footerBrandName');
+
+      if (headerTitle) headerTitle.textContent = name;
+      if (headerSubtitle) headerSubtitle.textContent = subtitle;
+      if (authTitle) authTitle.textContent = name;
+      if (authSubtitle) authSubtitle.textContent = subtitle;
+      if (heroBadge) heroBadge.textContent = `${name} Command`;
+      if (footerName) footerName.textContent = name;
+
+      // Update Header & Auth custom logo images
+      const headerImg = document.getElementById('headerCustomLogoImg');
+      const headerDefIcon = document.getElementById('headerDefaultIcon');
+      const authImg = document.getElementById('authCustomLogoImg');
+      const authDefIcon = document.getElementById('authDefaultIcon');
+
+      if (androidIcon) {
+        if (headerImg && headerDefIcon) {
+          headerImg.src = androidIcon;
+          headerImg.classList.remove('hidden');
+          headerDefIcon.classList.add('hidden');
+        }
+        if (authImg && authDefIcon) {
+          authImg.src = androidIcon;
+          authImg.classList.remove('hidden');
+          authDefIcon.classList.add('hidden');
+        }
+      }
+
+      // Update <head> iOS apple-touch-icon and Android shortcut icon links
+      const appleLink = document.getElementById('appleTouchIcon');
+      const androidLink = document.getElementById('androidShortcutIcon');
+      const faviconLink = document.getElementById('standardFavicon');
+      if (appleLink) appleLink.href = iosIcon;
+      if (androidLink) androidLink.href = androidIcon;
+      if (faviconLink) faviconLink.href = androidIcon;
+
+      // Generate Dynamic Web App Manifest for Android Chrome / PWA installation
+      const manifestObj = {
+        name: `${name} - Jobsite Manager`,
+        short_name: name,
+        description: subtitle,
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#0f172a",
+        icons: [
+          {
+            src: androidIcon,
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable"
+          },
+          {
+            src: androidIcon,
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable"
+          },
+          {
+            src: iosIcon,
+            sizes: "180x180",
+            type: "image/png"
+          }
+        ]
+      };
+
+      try {
+        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        const manifestLink = document.getElementById('pwaManifest');
+        if (manifestLink) manifestLink.href = manifestUrl;
+      } catch (e) {
+        console.warn("Manifest generation skipped:", e);
+      }
+    }
+
+    function openBrandingModal() {
+      document.getElementById('brandAppNameInput').value = appBranding.appName || 'SiteFlow';
+      document.getElementById('brandAppSubtitleInput').value = appBranding.appSubtitle || 'Simple Jobsite & Resource Command';
+      document.getElementById('androidIconUrlInput').value = appBranding.androidIcon || '';
+      document.getElementById('iosIconUrlInput').value = appBranding.iosIcon || '';
+      updateLiveIconPreview();
+      openModal('brandingModal');
+    }
+
+    function updateLiveIconPreview() {
+      const nameVal = document.getElementById('brandAppNameInput').value.trim() || 'SiteFlow';
+      const androidUrl = document.getElementById('androidIconUrlInput').value.trim() || defaultGeneratedIcon;
+      const iosUrl = document.getElementById('iosIconUrlInput').value.trim() || defaultGeneratedIcon;
+
+      document.getElementById('previewAndroidImg').src = androidUrl;
+      document.getElementById('previewIosImg').src = iosUrl;
+      document.getElementById('previewAndroidLabel').textContent = nameVal;
+      document.getElementById('previewIosLabel').textContent = nameVal;
+    }
+
+    function applyPresetAppIcon(bgColor, textColor, defaultInitials) {
+      const nameVal = document.getElementById('brandAppNameInput').value.trim() || 'SiteFlow';
+      const words = nameVal.split(/\s+/).filter(Boolean);
+      const initials = words.length > 1
+        ? (words[0][0] + words[1][0]).toUpperCase()
+        : nameVal.slice(0, 2).toUpperCase();
+
+      const dataUrl = generateCanvasAppIcon(bgColor, textColor, initials || defaultInitials);
+      document.getElementById('androidIconUrlInput').value = dataUrl;
+      document.getElementById('iosIconUrlInput').value = dataUrl;
+      updateLiveIconPreview();
+      showToast(`Generated ${initials} icon for Android & iOS!`);
+    }
+
+    function handleIconFileUpload(event, platform) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          // Resize to crisp 256x256 square PNG so it fits comfortably in LocalStorage & Firestore
+          const canvas = document.createElement('canvas');
+          canvas.width = 256;
+          canvas.height = 256;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, 256, 256);
+          const resizedDataUrl = canvas.toDataURL('image/png');
+
+          if (platform === 'android') {
+            document.getElementById('androidIconUrlInput').value = resizedDataUrl;
+          } else {
+            document.getElementById('iosIconUrlInput').value = resizedDataUrl;
+          }
+          updateLiveIconPreview();
+          showToast(`Custom ${platform === 'android' ? 'Android' : 'iOS'} icon loaded!`);
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function saveBrandingSettings(e) {
+      e.preventDefault();
+      appBranding = {
+        appName: document.getElementById('brandAppNameInput').value.trim() || 'SiteFlow',
+        appSubtitle: document.getElementById('brandAppSubtitleInput').value.trim() || 'Simple Jobsite & Resource Command',
+        androidIcon: document.getElementById('androidIconUrlInput').value.trim() || defaultGeneratedIcon,
+        iosIcon: document.getElementById('iosIconUrlInput').value.trim() || defaultGeneratedIcon
+      };
+
+      localStorage.setItem('sm_app_branding', JSON.stringify(appBranding));
+      applyBrandingToDOM();
+      closeModal('brandingModal');
+      await syncStorage();
+      showToast(`App branding & mobile icons updated to "${appBranding.appName}"!`);
+    }
+
+    // Apply initial branding on load
+    applyBrandingToDOM();
+
+    // --- Firebase Auth & Cloud Sync Engine ---
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      const authScreen = document.getElementById('authScreen');
+      const userProfileBadge = document.getElementById('userProfileBadge');
+      const userAvatar = document.getElementById('userAvatar');
+
+      if (user) {
+        if (authScreen) authScreen.classList.add('hidden');
+        if (userProfileBadge) {
+          userProfileBadge.classList.remove('hidden');
+          userProfileBadge.classList.add('flex');
+        }
+        if (userAvatar) {
+          const initials = user.displayName ? user.displayName.slice(0, 2).toUpperCase() : (user.email ? user.email.slice(0, 2).toUpperCase() : 'US');
+          userAvatar.textContent = initials;
+          userAvatar.title = user.displayName || user.email || user.phoneNumber || 'User';
+        }
+
+        // Load user's sites and custom branding from Firestore
+        try {
+          const userDocRef = doc(db, 'users', user.uid, 'jobsite_data', 'main_portfolio');
+          const docSnap = await getDoc(userDocRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.sites) sites = data.sites;
+            if (data.branding) {
+              appBranding = data.branding;
+              localStorage.setItem('sm_app_branding', JSON.stringify(appBranding));
+              applyBrandingToDOM();
+            }
+          } else {
+            await setDoc(userDocRef, {
+              sites: initialSitesData,
+              branding: appBranding,
+              updatedAt: new Date().toISOString()
+            });
+            sites = initialSitesData;
+          }
+        } catch (err) {
+          console.warn("Using offline memory/local cache:", err);
+          sites = JSON.parse(localStorage.getItem('sm_multi_sites')) || initialSitesData;
+        }
+
+        setActiveSiteId(localStorage.getItem('sm_active_site_id') || sites[0]?.id || null);
+        populateGlobalSiteSelector();
+        updateGlobalPortfolioStats();
+        renderSitesList();
+        showToast(`Welcome back, ${user.displayName || user.email || 'Supervisor'}!`);
+      } else {
+        if (authScreen) authScreen.classList.remove('hidden');
+        if (userProfileBadge) {
+          userProfileBadge.classList.add('hidden');
+          userProfileBadge.classList.remove('flex');
+        }
+      }
+    });
+
+    // Cloud + Local Persistence
+    async function syncStorage() {
+      localStorage.setItem('sm_multi_sites', JSON.stringify(sites));
+      localStorage.setItem('sm_app_branding', JSON.stringify(appBranding));
+      if (currentSiteId) {
+        localStorage.setItem('sm_active_site_id', currentSiteId);
+      }
+      populateGlobalSiteSelector();
+      updateGlobalPortfolioStats();
+
+      if (currentUser) {
+        try {
+          const userDocRef = doc(db, 'users', currentUser.uid, 'jobsite_data', 'main_portfolio');
+          await setDoc(userDocRef, {
+            sites: sites,
+            branding: appBranding,
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+        } catch (err) {
+          console.error("Cloud sync warning:", err);
+        }
+      }
+    }
+
+    // Refresh whichever view is currently active
+    function refreshActiveViews() {
+      populateGlobalSiteSelector();
+      updateGlobalPortfolioStats();
+      if (!document.getElementById('singleSiteView').classList.contains('hidden')) {
+        loadCurrentSiteData();
+      }
+      if (!document.getElementById('masterDirectoryView').classList.contains('hidden')) {
+        renderMasterCurrentTab();
+      }
+      if (!document.getElementById('allSitesView').classList.contains('hidden')) {
+        renderSitesList();
+      }
+    }
+
+    // Helper: Populate Site Assignment Dropdown inside Staff/Material/Tool Modals
+    function populateResourceSiteSelect(selectElementId, selectedSiteId) {
+      const sel = document.getElementById(selectElementId);
+      if (!sel) return;
+      const fallbackSiteId = selectedSiteId || currentSiteId || sites[0]?.id || '';
+      sel.innerHTML = sites.map(s => `
+        <option value="${s.id}" ${s.id === fallbackSiteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>
+      `).join('');
+    }
+
+    // --- Authentication Actions ---
+    window.switchAuthTab = function(tab) {
+      ['login', 'register', 'phone', 'forgot'].forEach(t => {
+        const btn = document.getElementById(`tabBtn-${t}`);
+        const panel = document.getElementById(`authPanel-${t}`);
+        if (panel) {
+          if (t === tab) {
+            panel.classList.remove('hidden');
+          } else {
+            panel.classList.add('hidden');
+          }
+        }
+        if (btn) {
+          if (t === tab) {
+            btn.className = 'flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition';
+          } else {
+            btn.className = 'flex-1 py-1.5 rounded-lg text-slate-400 hover:text-white font-bold transition';
+          }
+        }
+      });
+    };
+
+    window.handleEmailLogin = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLoginSubmit');
+      
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (err) {
+        showToast(err.message || 'Login failed. Please verify credentials.', false);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket text-amber-400"></i><span>Sign In to SiteFlow</span>';
+      }
+    };
+
+    window.handleRegister = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPassword').value;
+      const btn = document.getElementById('btnRegisterSubmit');
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        if (name && userCred.user) {
+          await updateProfile(userCred.user, { displayName: name });
+        }
+        showToast('Account registered successfully!');
+      } catch (err) {
+        showToast(err.message || 'Registration failed.', false);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i><span>Create Supervisor Account</span>';
+      }
+    };
+
+    window.handleForgotPassword = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value.trim();
+      const btn = document.getElementById('btnForgotSubmit');
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+        await sendPasswordResetEmail(auth, email);
+        showToast('Password reset link sent to your email.');
+        switchAuthTab('login');
+      } catch (err) {
+        showToast(err.message || 'Error sending reset email.', false);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-key"></i><span>Send Reset Link</span>';
+      }
+    };
+
+    window.handleGoogleSignIn = async function() {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        showToast(err.message || 'Google sign-in canceled or failed.', false);
+      }
+    };
+
+    window.sendPhoneOtp = async function() {
+      const phone = document.getElementById('phoneInput').value.trim();
+      const btn = document.getElementById('btnSendOtp');
+      if (!phone || phone.length < 8) {
+        showToast('Please enter a valid phone number with country code.', false);
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending SMS...';
+
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            'size': 'invisible'
+          });
+        }
+
+        confirmationResultObj = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+        document.getElementById('sentPhoneDisplay').textContent = phone;
+        document.getElementById('phoneStepNumber').classList.add('hidden');
+        document.getElementById('phoneStepOtp').classList.remove('hidden');
+        showToast('Verification code dispatched via SMS!');
+      } catch (err) {
+        showToast(err.message || 'Failed to send SMS OTP.', false);
+        if (window.recaptchaVerifier) {
+          try { window.recaptchaVerifier.clear(); } catch(e){}
+          window.recaptchaVerifier = null;
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Send OTP Verification Code</span>';
+      }
+    };
+
+    window.verifyPhoneOtp = async function() {
+      const code = document.getElementById('phoneOtpInput').value.trim();
+      const btn = document.getElementById('btnVerifyOtp');
+      if (!code || code.length !== 6 || !confirmationResultObj) {
+        showToast('Please enter the 6-digit code received.', false);
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+        await confirmationResultObj.confirm(code);
+        showToast('Phone verified and logged in!');
+      } catch (err) {
+        showToast(err.message || 'Invalid verification code.', false);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i><span>Verify & Sign In</span>';
+      }
+    };
+
+    window.resetPhoneAuth = function() {
+      document.getElementById('phoneStepOtp').classList.add('hidden');
+      document.getElementById('phoneStepNumber').classList.remove('hidden');
+      document.getElementById('phoneOtpInput').value = '';
+    };
+
+    window.handleSignOut = async function() {
+      showConfirm('Sign Out', 'Are you sure you want to log out of your site command dashboard?', async () => {
+        try {
+          await signOut(auth);
+          showToast('Signed out successfully.');
+        } catch (err) {
+          showToast('Error signing out.', false);
+        }
+      });
+    };
+
+    // Custom Confirmation Dialog
+    function showConfirm(title, desc, onConfirm) {
+      document.getElementById('confirmModalTitle').textContent = title;
+      document.getElementById('confirmModalDesc').textContent = desc;
+      pendingConfirmAction = onConfirm;
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function closeConfirmModal(accepted) {
+      document.getElementById('confirmModal').classList.add('hidden');
+      if (accepted && typeof pendingConfirmAction === 'function') {
+        pendingConfirmAction();
+      }
+      pendingConfirmAction = null;
+    }
+
+    // Toast alerts
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMessage');
+      const icon = document.getElementById('toastIcon');
+      
+      msg.textContent = message;
+      if (isSuccess) {
+        icon.className = 'fa-solid fa-circle-check text-emerald-400 text-base';
+      } else {
+        icon.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-base';
+      }
+
+      toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2600);
+    }
+
+    // Modal helpers
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Global Selector Populate
+    function populateGlobalSiteSelector() {
+      const select = document.getElementById('globalSiteSelect');
+      if (!select) return;
+
+      select.innerHTML = sites.map(s => `
+        <option value="${s.id}" ${s.id === currentSiteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>
+      `).join('');
+    }
+
+    function handleSiteSelectChange(siteId) {
+      openSiteDetails(siteId);
+    }
+
+    // ========================================================
+    // VIEW SWITCHER: ALL SITES vs SINGLE SITE vs MASTER HUB
+    // ========================================================
+    function goToSitesList() {
+      const singleView = document.getElementById('singleSiteView');
+      const masterView = document.getElementById('masterDirectoryView');
+      const allView = document.getElementById('allSitesView');
+
+      if (singleView) singleView.classList.add('hidden');
+      if (masterView) masterView.classList.add('hidden');
+      if (allView) allView.classList.remove('hidden');
+
+      renderSitesList();
+      updateGlobalPortfolioStats();
+    }
+
+    function openSiteDetails(siteId) {
+      setActiveSiteId(siteId);
+      populateGlobalSiteSelector();
+
+      const allView = document.getElementById('allSitesView');
+      const masterView = document.getElementById('masterDirectoryView');
+      const singleView = document.getElementById('singleSiteView');
+
+      if (allView) allView.classList.add('hidden');
+      if (masterView) masterView.classList.add('hidden');
+      if (singleView) singleView.classList.remove('hidden');
+      
+      loadCurrentSiteData();
+    }
+
+    function goToMasterDirectory(initialTab = 'staff') {
+      const allView = document.getElementById('allSitesView');
+      const singleView = document.getElementById('singleSiteView');
+      const masterView = document.getElementById('masterDirectoryView');
+
+      if (allView) allView.classList.add('hidden');
+      if (singleView) singleView.classList.add('hidden');
+      if (masterView) masterView.classList.remove('hidden');
+
+      // Populate site dropdown filter
+      const filterSelect = document.getElementById('masterSiteFilter');
+      if (filterSelect) {
+        const currentVal = filterSelect.value || 'ALL';
+        filterSelect.innerHTML = `<option value="ALL">All Work Sites (Unified)</option>` + sites.map(s => `
+          <option value="${s.id}">${escapeHtml(s.name)}</option>
+        `).join('');
+        filterSelect.value = currentVal;
+      }
+
+      switchMasterTab(initialTab);
+    }
+
+    function switchMasterTab(tabName) {
+      activeMasterTab = tabName;
+      ['staff', 'materials', 'tools'].forEach(tab => {
+        const btn = document.getElementById(`masterTabBtn-${tab}`);
+        const sec = document.getElementById(`masterSection-${tab}`);
+        if (tab === tabName) {
+          btn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+          btn.classList.remove('text-slate-600');
+          sec.classList.remove('hidden');
+        } else {
+          btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+          btn.classList.add('text-slate-600');
+          sec.classList.add('hidden');
+        }
+      });
+
+      renderMasterCurrentTab();
+    }
+
+    function renderMasterCurrentTab() {
+      updateMasterCounts();
+      if (activeMasterTab === 'staff') {
+        renderMasterStaff();
+      } else if (activeMasterTab === 'materials') {
+        renderMasterMaterials();
+      } else if (activeMasterTab === 'tools') {
+        renderMasterTools();
+      }
+    }
+
+    function updateMasterCounts() {
+      let totalStaff = 0;
+      let totalMaterials = 0;
+      let totalTools = 0;
+      let staffPresent = 0;
+      let materialsLow = 0;
+      let toolsInUse = 0;
+
+      sites.forEach(s => {
+        (s.staff || []).forEach(st => {
+          totalStaff++;
+          if (st.present) staffPresent++;
+        });
+        (s.materials || []).forEach(m => {
+          totalMaterials++;
+          if (((m.total || 0) - (m.used || 0)) <= (m.minAlert || 0)) materialsLow++;
+        });
+        (s.tools || []).forEach(t => {
+          const q = parseInt(t.quantity) || 1;
+          totalTools += q;
+          if (t.status === 'In Use') toolsInUse += q;
+        });
+      });
+
+      const sCountEl = document.getElementById('masterStaffCount');
+      const mCountEl = document.getElementById('masterMaterialsCount');
+      const tCountEl = document.getElementById('masterToolsCount');
+      if (sCountEl) sCountEl.textContent = totalStaff;
+      if (mCountEl) mCountEl.textContent = totalMaterials;
+      if (tCountEl) tCountEl.textContent = totalTools;
+
+      const spEl = document.getElementById('masterStaffPresentRatio');
+      if (spEl) spEl.textContent = `${staffPresent} on duty / ${totalStaff} total`;
+
+      const mlEl = document.getElementById('masterMaterialsLowRatio');
+      if (mlEl) mlEl.textContent = `${materialsLow} low alert`;
+
+      const tuEl = document.getElementById('masterToolsInUseRatio');
+      if (tuEl) tuEl.textContent = `${toolsInUse} in use / ${totalTools} units`;
+    }
+
+    function getFilteredMasterData() {
+      const q = (document.getElementById('masterSearchInput')?.value || '').toLowerCase().trim();
+      const siteFilter = document.getElementById('masterSiteFilter')?.value || 'ALL';
+
+      const targetSites = siteFilter === 'ALL' 
+        ? sites 
+        : sites.filter(s => s.id === siteFilter);
+
+      return { q, targetSites };
+    }
+
+    // ========================================================
+    // MASTER DIRECTORY CARDS (WITH FULL EDIT & DELETE ACTIONS)
+    // ========================================================
+    function renderMasterStaff() {
+      const container = document.getElementById('masterStaffList');
+      const emptyMsg = document.getElementById('noMasterStaff');
+      if (!container || !emptyMsg) return;
+
+      const { q, targetSites } = getFilteredMasterData();
+      let allStaff = [];
+
+      targetSites.forEach(s => {
+        (s.staff || []).forEach(st => {
+          allStaff.push({ ...st, siteId: s.id, siteName: s.name });
+        });
+      });
+
+      if (q) {
+        allStaff = allStaff.filter(st => 
+          st.name.toLowerCase().includes(q) ||
+          st.trade.toLowerCase().includes(q) ||
+          st.siteName.toLowerCase().includes(q) ||
+          (st.phone && st.phone.includes(q))
+        );
+      }
+
+      if (allStaff.length === 0) {
+        container.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      container.innerHTML = allStaff.map(st => `
+        <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-300 transition">
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs">
+                  ${escapeHtml((st.name || 'W').slice(0, 2).toUpperCase())}
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-tight">${escapeHtml(st.name)}</h4>
+                  <span class="text-[10px] text-slate-500 font-medium">${escapeHtml(st.trade)}</span>
+                </div>
+              </div>
+
+              <button onclick="toggleMasterStaffPresence('${st.siteId}', '${st.id}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 transition ${st.present ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                <span class="w-1.5 h-1.5 rounded-full ${st.present ? 'bg-emerald-600' : 'bg-rose-500'}"></span>
+                ${st.present ? 'On Site' : 'Absent'}
+              </button>
+            </div>
+
+            <!-- Site & Contact info -->
+            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 text-xs space-y-1 mt-2">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400"><i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Site:</span>
+                <button onclick="openSiteDetails('${st.siteId}')" class="font-semibold text-slate-800 hover:text-sky-600 truncate max-w-[170px] text-right underline underline-offset-2">
+                  ${escapeHtml(st.siteName)}
+                </button>
+              </div>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400"><i class="fa-solid fa-phone text-slate-400 mr-1"></i>Phone:</span>
+                <a href="tel:${escapeHtml(st.phone)}" class="font-mono text-sky-600 font-bold">${escapeHtml(st.phone)}</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons (Call, Edit, Delete, Site) -->
+          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+            <span class="text-[10px] text-slate-400 truncate max-w-[110px]">ICE: ${escapeHtml(st.emergency || 'N/A')}</span>
+            <div class="flex items-center gap-1.5">
+              <a href="tel:${escapeHtml(st.phone)}" class="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-semibold inline-flex items-center gap-1" title="Call Worker">
+                <i class="fa-solid fa-phone text-[10px]"></i>
+              </a>
+              <button onclick="editStaff('${st.id}', '${st.siteId}')" class="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-md font-bold inline-flex items-center gap-1" title="Edit Staff Details">
+                <i class="fa-solid fa-pen text-[10px]"></i> Edit
+              </button>
+              <button onclick="deleteStaff('${st.id}', '${st.siteId}')" class="text-xs px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md font-semibold inline-flex items-center" title="Delete Worker">
+                <i class="fa-solid fa-trash-can text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleMasterStaffPresence(siteId, staffId) {
+      const site = sites.find(s => s.id === siteId);
+      if (!site) return;
+      const person = (site.staff || []).find(st => st.id === staffId);
+      if (!person) return;
+
+      person.present = !person.present;
+      syncStorage();
+      renderMasterCurrentTab();
+      showToast(`${person.name} attendance updated`);
+    }
+
+    function renderMasterMaterials() {
+      const container = document.getElementById('masterMaterialsList');
+      const emptyMsg = document.getElementById('noMasterMaterials');
+      if (!container || !emptyMsg) return;
+
+      const { q, targetSites } = getFilteredMasterData();
+      let allMaterials = [];
+
+      targetSites.forEach(s => {
+        (s.materials || []).forEach(m => {
+          allMaterials.push({ ...m, siteId: s.id, siteName: s.name });
+        });
+      });
+
+      if (q) {
+        allMaterials = allMaterials.filter(m => 
+          m.name.toLowerCase().includes(q) ||
+          m.category.toLowerCase().includes(q) ||
+          m.siteName.toLowerCase().includes(q)
+        );
+      }
+
+      if (allMaterials.length === 0) {
+        container.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      container.innerHTML = allMaterials.map(m => {
+        const remaining = Math.max(0, (m.total || 0) - (m.used || 0));
+        const isLow = remaining <= (m.minAlert || 0);
+        const percent = Math.min(100, Math.round(((m.used || 0) / (m.total || 1)) * 100));
+
+        return `
+          <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-300 transition">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <div>
+                  <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-tight">${escapeHtml(m.name)}</h4>
+                  <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium border border-slate-200 inline-block mt-0.5">
+                    ${escapeHtml(m.category)}
+                  </span>
+                </div>
+                ${isLow ? `
+                  <span class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Low Stock
+                  </span>
+                ` : `
+                  <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    Sufficient
+                  </span>
+                `}
+              </div>
+
+              <!-- Location Tag -->
+              <p class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-location-dot text-amber-500 text-[10px]"></i>
+                <button onclick="openSiteDetails('${m.siteId}')" class="font-semibold text-slate-700 hover:text-sky-600 underline underline-offset-2">${escapeHtml(m.siteName)}</button>
+              </p>
+
+              <!-- Progress bar & metrics -->
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100 mt-2.5 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-slate-500">Remaining Stock:</span>
+                  <span class="font-extrabold ${isLow ? 'text-rose-600' : 'text-slate-900'}">${remaining} ${escapeHtml(m.unit)}</span>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-500">
+                  <span>Used: <strong class="text-amber-700">${m.used}</strong> / ${m.total} ${escapeHtml(m.unit)}</span>
+                  <span class="font-bold">${percent}%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                  <div class="h-1.5 rounded-full ${percent > 85 ? 'bg-rose-500' : 'bg-amber-500'}" style="width: ${percent}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions row (Replenish, Use, Edit, Delete) -->
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5">
+              <div class="flex items-center gap-1">
+                <button onclick="quickReplenishMasterMaterial('${m.siteId}', '${m.id}', 10)" class="text-[11px] px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-bold transition">
+                  +10
+                </button>
+                <button onclick="openUseMaterialModal('${m.id}', '${m.siteId}')" class="text-[11px] px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-md font-bold transition shadow-sm">
+                  - Use
+                </button>
+              </div>
+              <div class="flex items-center gap-1">
+                <button onclick="editMaterial('${m.id}', '${m.siteId}')" class="text-xs px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-md font-bold inline-flex items-center gap-1" title="Edit Material Details">
+                  <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                </button>
+                <button onclick="deleteMaterial('${m.id}', '${m.siteId}')" class="text-xs px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md font-semibold" title="Delete Material">
+                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function quickReplenishMasterMaterial(siteId, matId, qty) {
+      const site = sites.find(s => s.id === siteId);
+      if (!site) return;
+      const mat = (site.materials || []).find(m => m.id === matId);
+      if (!mat) return;
+
+      mat.total = (parseFloat(mat.total) || 0) + qty;
+      syncStorage();
+      renderMasterCurrentTab();
+      showToast(`Added +${qty} ${mat.unit} to ${mat.name}`);
+    }
+
+    function renderMasterTools() {
+      const container = document.getElementById('masterToolsList');
+      const emptyMsg = document.getElementById('noMasterTools');
+      if (!container || !emptyMsg) return;
+
+      const { q, targetSites } = getFilteredMasterData();
+      let allTools = [];
+
+      targetSites.forEach(s => {
+        (s.tools || []).forEach(t => {
+          allTools.push({ ...t, siteId: s.id, siteName: s.name });
+        });
+      });
+
+      if (q) {
+        allTools = allTools.filter(t => 
+          t.name.toLowerCase().includes(q) ||
+          (t.serial && t.serial.toLowerCase().includes(q)) ||
+          t.siteName.toLowerCase().includes(q) ||
+          (t.assignedTo && t.assignedTo.toLowerCase().includes(q))
+        );
+      }
+
+      if (allTools.length === 0) {
+        container.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      container.innerHTML = allTools.map(t => {
+        let badgeColor = 'bg-sky-50 text-sky-700 border-sky-200';
+        let badgeDot = 'bg-sky-500';
+        if (t.status === 'Available') {
+          badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          badgeDot = 'bg-emerald-500';
+        } else if (t.status === 'Under Repair') {
+          badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+          badgeDot = 'bg-amber-500';
+        }
+
+        return `
+          <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-slate-300 transition">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <div>
+                  <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-tight">${escapeHtml(t.name)} <span class="text-slate-400 font-normal">(x${t.quantity || 1})</span></h4>
+                  <p class="text-[10px] text-slate-400 font-mono mt-0.5">Asset: ${escapeHtml(t.serial || 'N/A')}</p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeColor}">
+                  <span class="w-1.5 h-1.5 rounded-full ${badgeDot}"></span>
+                  ${escapeHtml(t.status)}
+                </span>
+              </div>
+
+              <!-- Location & Custodian -->
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-xs space-y-1.5 mt-2">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="text-slate-400"><i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>Site:</span>
+                  <button onclick="openSiteDetails('${t.siteId}')" class="font-semibold text-slate-800 hover:text-sky-600 truncate max-w-[180px] underline underline-offset-2">${escapeHtml(t.siteName)}</button>
+                </div>
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="text-slate-400"><i class="fa-solid fa-user-shield text-slate-400 mr-1"></i>Custodian:</span>
+                  <span class="font-medium text-slate-700 truncate max-w-[180px]">${escapeHtml(t.assignedTo || 'Unassigned Depot')}</span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-1 border-t border-slate-200/50">
+                  <span class="text-slate-400">Condition:</span>
+                  <span class="italic text-slate-600 truncate max-w-[180px]">${escapeHtml(t.condition || 'Operational')}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Status & Edit / Delete Buttons -->
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between gap-1">
+              <div class="flex gap-1 text-[10px]">
+                <button onclick="setMasterToolStatus('${t.siteId}', '${t.id}', 'In Use')" class="px-2 py-1 rounded font-semibold ${t.status === 'In Use' ? 'bg-sky-600 text-white' : 'bg-slate-100 hover:bg-sky-100 text-slate-600'}">In Use</button>
+                <button onclick="setMasterToolStatus('${t.siteId}', '${t.id}', 'Available')" class="px-2 py-1 rounded font-semibold ${t.status === 'Available' ? 'bg-emerald-600 text-white' : 'bg-slate-100 hover:bg-emerald-100 text-slate-600'}">Depot</button>
+                <button onclick="setMasterToolStatus('${t.siteId}', '${t.id}', 'Under Repair')" class="px-2 py-1 rounded font-semibold ${t.status === 'Under Repair' ? 'bg-amber-600 text-white' : 'bg-slate-100 hover:bg-amber-100 text-slate-600'}">Repair</button>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <button onclick="editTool('${t.id}', '${t.siteId}')" class="text-xs px-2.5 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-md font-bold inline-flex items-center gap-1" title="Edit Tool Details">
+                  <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                </button>
+                <button onclick="deleteTool('${t.id}', '${t.siteId}')" class="text-xs px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md font-semibold" title="Delete Tool">
+                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setMasterToolStatus(siteId, toolId, newStatus) {
+      const site = sites.find(s => s.id === siteId);
+      if (!site) return;
+      const tool = (site.tools || []).find(t => t.id === toolId);
+      if (!tool) return;
+
+      tool.status = newStatus;
+      syncStorage();
+      renderMasterCurrentTab();
+      showToast(`${tool.name} status updated to: ${newStatus}`);
+    }
+
+    // ========================================================
+    // GLOBAL PORTFOLIO STATS & OVERVIEW CARDS
+    // ========================================================
+    function updateGlobalPortfolioStats() {
+      let totalSites = sites.length;
+      let totalStaff = 0;
+      let presentStaff = 0;
+      let totalTools = 0;
+      let toolsInUse = 0;
+      let totalMaterials = 0;
+      let lowStockCount = 0;
+
+      sites.forEach(s => {
+        (s.staff || []).forEach(st => {
+          totalStaff++;
+          if (st.present) presentStaff++;
+        });
+        (s.tools || []).forEach(t => {
+          const q = parseInt(t.quantity) || 1;
+          totalTools += q;
+          if (t.status === 'In Use') toolsInUse += q;
+        });
+        (s.materials || []).forEach(m => {
+          totalMaterials++;
+          if (((m.total || 0) - (m.used || 0)) <= (m.minAlert || 0)) lowStockCount++;
+        });
+      });
+
+      const stSites = document.getElementById('statTotalSites');
+      const stStaff = document.getElementById('statTotalStaff');
+      const stPresent = document.getElementById('statPresentStaff');
+      const stTools = document.getElementById('statTotalTools');
+      const stToolsInUse = document.getElementById('statToolsInUse');
+      const stMats = document.getElementById('statTotalMaterials');
+      const stLowMats = document.getElementById('statLowStockSites');
+      const sitesPill = document.getElementById('sitesCountPill');
+
+      if (stSites) stSites.textContent = totalSites;
+      if (stStaff) stStaff.textContent = totalStaff;
+      if (stPresent) stPresent.textContent = `${presentStaff} On Shift`;
+      if (stTools) stTools.textContent = totalTools;
+      if (stToolsInUse) stToolsInUse.textContent = `${toolsInUse} in active custody`;
+      if (stMats) stMats.textContent = totalMaterials;
+      if (stLowMats) stLowMats.textContent = `${lowStockCount} critical low`;
+      if (sitesPill) sitesPill.textContent = totalSites;
+    }
+
+    function renderSitesList() {
+      const container = document.getElementById('sitesGridContainer');
+      if (!container) return;
+
+      const q = (document.getElementById('siteSearchInput')?.value || '').toLowerCase().trim();
+      let filtered = sites;
+      if (q) {
+        filtered = sites.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.location.toLowerCase().includes(q) ||
+          s.manager.toLowerCase().includes(q)
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200">
+            <i class="fa-solid fa-helmet-safety text-4xl mb-3 text-slate-300"></i>
+            <h4 class="text-base font-bold text-slate-700">No work sites match your search</h4>
+            <p class="text-xs text-slate-500 mt-1">Try another search term or create a new job site.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(site => {
+        const staffCount = (site.staff || []).length;
+        const staffOnDuty = (site.staff || []).filter(s => s.present).length;
+        const toolCount = (site.tools || []).reduce((acc, t) => acc + (parseInt(t.quantity) || 1), 0);
+        const lowMats = (site.materials || []).filter(m => ((m.total || 0) - (m.used || 0)) <= (m.minAlert || 0)).length;
+
+        let statusBg = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        if (site.status === 'Pending') statusBg = 'bg-amber-100 text-amber-800 border-amber-200';
+        if (site.status === 'Completed') statusBg = 'bg-slate-100 text-slate-800 border-slate-200';
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between cursor-pointer group hover:border-sky-300" onclick="openSiteDetails('${site.id}')">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full border ${statusBg}">
+                  ${escapeHtml(site.status || 'Active')}
+                </span>
+                <span class="text-xs font-bold text-slate-400 group-hover:text-sky-600 transition">
+                  Manage Site <i class="fa-solid fa-arrow-right ml-1"></i>
+                </span>
+              </div>
+
+              <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-700 transition leading-snug">${escapeHtml(site.name)}</h3>
+              <p class="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
+                <i class="fa-solid fa-location-dot text-amber-500 text-[11px]"></i>
+                <span class="truncate">${escapeHtml(site.location)}</span>
+              </p>
+              <p class="text-xs text-slate-600 mt-1">
+                Supervisor: <strong class="text-slate-800">${escapeHtml(site.manager)}</strong>
+              </p>
+
+              <!-- Progress bar -->
+              <div class="mt-4">
+                <div class="flex justify-between text-[11px] font-semibold text-slate-500 mb-1">
+                  <span>Site Progress</span>
+                  <span class="font-bold text-slate-800">${site.progress || 0}%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                  <div class="h-2 rounded-full bg-amber-500" style="width: ${site.progress || 0}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Site Metrics -->
+            <div class="grid grid-cols-3 gap-2 pt-4 mt-4 border-t border-slate-100 text-center">
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Crew</p>
+                <p class="text-xs font-black text-slate-800 mt-0.5">${staffOnDuty}/${staffCount}</p>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg">
+                <p class="text-[10px] text-slate-400 font-bold uppercase">Tools</p>
+                <p class="text-xs font-black text-slate-800 mt-0.5">${toolCount} units</p>
+              </div>
+              <div class="bg-slate-50 p-2 rounded-lg ${lowMats > 0 ? 'bg-amber-50 border border-amber-200' : ''}">
+                <p class="text-[10px] ${lowMats > 0 ? 'text-amber-700' : 'text-slate-400'} font-bold uppercase">Materials</p>
+                <p class="text-xs font-black ${lowMats > 0 ? 'text-amber-800' : 'text-slate-800'} mt-0.5">${lowMats > 0 ? lowMats + ' low' : (site.materials || []).length + ' items'}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========================================================
+    // SITE DRILLDOWN: LOAD SINGLE SITE DATA
+    // ========================================================
+    function getCurrentSite() {
+      if (!currentSiteId && sites.length > 0) {
+        setActiveSiteId(sites[0].id);
+      }
+      return sites.find(s => s.id === currentSiteId) || sites[0] || null;
+    }
+
+    function loadCurrentSiteData() {
+      const site = getCurrentSite();
+      if (!site) {
+        goToSitesList();
+        return;
+      }
+
+      // Populate Top Site Header
+      const nameEl = document.getElementById('currentSiteName');
+      const locEl = document.getElementById('currentSiteLocation');
+      const mgrEl = document.getElementById('currentSiteManager');
+      const statEl = document.getElementById('currentSiteStatusBadge');
+      const progBar = document.getElementById('currentSiteProgressBar');
+      const progTxt = document.getElementById('currentSiteProgressText');
+
+      if (nameEl) nameEl.textContent = site.name;
+      if (locEl) locEl.textContent = site.location;
+      if (mgrEl) mgrEl.textContent = site.manager;
+      if (progTxt) progTxt.textContent = `${site.progress || 0}%`;
+      if (progBar) progBar.style.width = `${site.progress || 0}%`;
+
+      if (statEl) {
+        statEl.textContent = site.status || 'Active';
+        if (site.status === 'Active') {
+          statEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+        } else if (site.status === 'Pending') {
+          statEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-200';
+        } else {
+          statEl.className = 'text-xs px-2.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-800 border border-slate-200';
+        }
+      }
+
+      // Update Sub-Tab Badges
+      const matCountEl = document.getElementById('badgeMatCount');
+      const toolCountEl = document.getElementById('badgeToolCount');
+      const staffCountEl = document.getElementById('badgeStaffCount');
+      const visitCountEl = document.getElementById('badgeVisitsCount');
+
+      if (matCountEl) matCountEl.textContent = (site.materials || []).length;
+      if (toolCountEl) toolCountEl.textContent = (site.tools || []).reduce((acc, t) => acc + (parseInt(t.quantity) || 1), 0);
+      if (staffCountEl) staffCountEl.textContent = (site.staff || []).length;
+      if (visitCountEl) visitCountEl.textContent = (site.visits || []).length;
+
+      // Render components
+      renderCurrentSiteMaterials();
+      renderCurrentSiteTools();
+      renderCurrentSiteStaff();
+      renderCurrentSiteVisits();
+      renderCurrentSiteLogs();
+    }
+
+    function switchSiteTab(tabName) {
+      const tabs = ['materials', 'tools', 'staff', 'visits', 'logs'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`siteTabBtn-${t}`);
+        const panel = document.getElementById(`siteSub-${t}`);
+        if (t === tabName) {
+          if (btn) {
+            btn.className = 'site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-sm whitespace-nowrap';
+          }
+          if (panel) panel.classList.remove('hidden');
+        } else {
+          if (btn) {
+            btn.className = 'site-sub-tab px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 whitespace-nowrap';
+          }
+          if (panel) panel.classList.add('hidden');
+        }
+      });
+    }
+
+    // ========================================================
+    // MATERIALS CRUD (WORKS FROM SINGLE SITE & MASTER HUB)
+    // ========================================================
+    function renderCurrentSiteMaterials() {
+      const site = getCurrentSite();
+      const tbody = document.getElementById('siteMaterialsTableBody');
+      const emptyMsg = document.getElementById('noSiteMaterials');
+      if (!site || !tbody || !emptyMsg) return;
+
+      const list = site.materials || [];
+      if (list.length === 0) {
+        tbody.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      tbody.innerHTML = list.map(m => {
+        const remaining = Math.max(0, (m.total || 0) - (m.used || 0));
+        const isLow = remaining <= (m.minAlert || 0);
+        const percent = Math.min(100, Math.round(((m.used || 0) / (m.total || 1)) * 100));
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-4 font-bold text-slate-900 text-xs">${escapeHtml(m.name)}</td>
+            <td class="py-3 px-4">
+              <span class="inline-block bg-slate-100 text-slate-700 text-[11px] px-2.5 py-0.5 rounded font-medium border border-slate-200">
+                ${escapeHtml(m.category)}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-semibold text-slate-700">${m.total} ${escapeHtml(m.unit)}</td>
+            <td class="py-3 px-4 font-semibold text-amber-700">${m.used} ${escapeHtml(m.unit)} (${percent}%)</td>
+            <td class="py-3 px-4 font-bold ${isLow ? 'text-rose-600' : 'text-slate-800'}">${remaining} ${escapeHtml(m.unit)}</td>
+            <td class="py-3 px-4">
+              ${isLow ? `
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Low Alert
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  Adequate
+                </span>
+              `}
+            </td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="openUseMaterialModal('${m.id}', '${site.id}')" class="px-2.5 py-1 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 rounded shadow-sm transition">
+                  - Use
+                </button>
+                <button onclick="quickReplenishCurrentMaterial('${m.id}', 25)" class="px-2 py-1 text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded transition" title="Quick Add +25">
+                  +25
+                </button>
+                <button onclick="editMaterial('${m.id}', '${site.id}')" class="px-2 py-1 text-xs font-bold bg-sky-50 hover:bg-sky-100 text-sky-700 rounded transition inline-flex items-center gap-1" title="Edit Material Details">
+                  <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                </button>
+                <button onclick="deleteMaterial('${m.id}', '${site.id}')" class="p-1.5 text-slate-400 hover:text-rose-600" title="Delete">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openMaterialModal(preselectedSiteId = null) {
+      document.getElementById('materialForm').reset();
+      document.getElementById('matId').value = '';
+      const targetSite = preselectedSiteId || currentSiteId || sites[0]?.id || '';
+      document.getElementById('matOriginalSiteId').value = targetSite;
+      populateResourceSiteSelect('matSiteSelect', targetSite);
+      document.getElementById('materialModalTitle').innerHTML = '<i class="fa-solid fa-cubes-stacked text-amber-400"></i> Allocate New Material to Site';
+      openModal('materialModal');
+    }
+
+    function editMaterial(id, siteId = null) {
+      const originSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === originSiteId) || getCurrentSite();
+      if (!site) return;
+
+      const mat = (site.materials || []).find(m => m.id === id);
+      if (!mat) return;
+
+      document.getElementById('matId').value = mat.id;
+      document.getElementById('matOriginalSiteId').value = site.id;
+      populateResourceSiteSelect('matSiteSelect', site.id);
+
+      document.getElementById('matName').value = mat.name;
+      document.getElementById('matCategory').value = mat.category;
+      document.getElementById('matUnit').value = mat.unit;
+      document.getElementById('matTotal').value = mat.total;
+      document.getElementById('matUsed').value = mat.used;
+      document.getElementById('matMinAlert').value = mat.minAlert;
+      document.getElementById('materialModalTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-400"></i> Edit Material Details';
+      openModal('materialModal');
+    }
+
+    function saveMaterial(e) {
+      e.preventDefault();
+      const id = document.getElementById('matId').value;
+      const originalSiteId = document.getElementById('matOriginalSiteId').value;
+      const targetSiteId = document.getElementById('matSiteSelect').value || currentSiteId;
+      const targetSite = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!targetSite) return;
+
+      const newMat = {
+        id: id || 'm_' + Date.now(),
+        name: document.getElementById('matName').value.trim(),
+        category: document.getElementById('matCategory').value,
+        unit: document.getElementById('matUnit').value.trim(),
+        total: parseFloat(document.getElementById('matTotal').value) || 0,
+        used: parseFloat(document.getElementById('matUsed').value) || 0,
+        minAlert: parseFloat(document.getElementById('matMinAlert').value) || 0
+      };
+
+      if (!targetSite.materials) targetSite.materials = [];
+
+      if (id) {
+        if (originalSiteId && originalSiteId !== targetSite.id) {
+          // Moved material to another site
+          const oldSite = sites.find(s => s.id === originalSiteId);
+          if (oldSite && oldSite.materials) {
+            oldSite.materials = oldSite.materials.filter(m => m.id !== id);
+          }
+          targetSite.materials.push(newMat);
+        } else {
+          const idx = targetSite.materials.findIndex(m => m.id === id);
+          if (idx !== -1) targetSite.materials[idx] = newMat;
+        }
+        showToast('Material details updated.');
+      } else {
+        targetSite.materials.push(newMat);
+        showToast(`Material allocated to ${targetSite.name}.`);
+      }
+
+      closeModal('materialModal');
+      syncStorage();
+      refreshActiveViews();
+    }
+
+    function quickReplenishCurrentMaterial(id, qty) {
+      const site = getCurrentSite();
+      const mat = (site.materials || []).find(m => m.id === id);
+      if (!mat) return;
+      mat.total = (parseFloat(mat.total) || 0) + qty;
+      syncStorage();
+      refreshActiveViews();
+      showToast(`Added +${qty} ${mat.unit} to stock.`);
+    }
+
+    function openUseMaterialModal(id, siteId = null) {
+      const targetSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!site) return;
+      const mat = (site.materials || []).find(m => m.id === id);
+      if (!mat) return;
+
+      document.getElementById('useMatId').value = mat.id;
+      document.getElementById('useMatSiteId').value = site.id;
+      document.getElementById('useMatAmount').value = '';
+      document.getElementById('useMatModalTitle').textContent = `Log Usage: ${mat.name}`;
+      document.getElementById('useMatModalSub').textContent = `Current: ${mat.used} used of ${mat.total} ${mat.unit} at ${site.name}. Enter amount used today:`;
+      openModal('useMaterialModal');
+    }
+
+    function submitUseMaterial(e) {
+      e.preventDefault();
+      const id = document.getElementById('useMatId').value;
+      const siteId = document.getElementById('useMatSiteId').value || currentSiteId;
+      const site = sites.find(s => s.id === siteId) || getCurrentSite();
+      const amt = parseFloat(document.getElementById('useMatAmount').value) || 0;
+      if (!site || !id || amt <= 0) return;
+
+      const mat = (site.materials || []).find(m => m.id === id);
+      if (!mat) return;
+
+      mat.used = (parseFloat(mat.used) || 0) + amt;
+      closeModal('useMaterialModal');
+      syncStorage();
+      refreshActiveViews();
+      showToast(`Consumed ${amt} ${mat.unit} of ${mat.name}`);
+    }
+
+    function deleteMaterial(id, siteId = null) {
+      const targetSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!site) return;
+
+      showConfirm('Delete Material?', `Remove this material allocation from ${site.name}?`, () => {
+        site.materials = (site.materials || []).filter(m => m.id !== id);
+        syncStorage();
+        refreshActiveViews();
+        showToast('Material allocation deleted.');
+      });
+    }
+
+    // ========================================================
+    // TOOLS CRUD (WORKS FROM SINGLE SITE & MASTER HUB)
+    // ========================================================
+    function renderCurrentSiteTools() {
+      const site = getCurrentSite();
+      const tbody = document.getElementById('siteToolsTableBody');
+      const emptyMsg = document.getElementById('noSiteTools');
+      if (!site || !tbody || !emptyMsg) return;
+
+      const list = site.tools || [];
+      if (list.length === 0) {
+        tbody.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      tbody.innerHTML = list.map(t => {
+        let badgeColor = 'bg-sky-50 text-sky-700 border-sky-200';
+        let dot = 'bg-sky-500';
+        if (t.status === 'Available') {
+          badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          dot = 'bg-emerald-500';
+        } else if (t.status === 'Under Repair') {
+          badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+          dot = 'bg-amber-500';
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-4 font-bold text-slate-900 text-xs">${escapeHtml(t.name)}</td>
+            <td class="py-3 px-4 font-mono text-xs text-slate-500">${escapeHtml(t.serial || 'N/A')}</td>
+            <td class="py-3 px-4 font-semibold text-slate-700">${t.quantity || 1}</td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${badgeColor}">
+                <span class="w-1.5 h-1.5 rounded-full ${dot}"></span>
+                ${escapeHtml(t.status)}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-slate-700 font-medium">${escapeHtml(t.assignedTo || 'Unassigned Depot')}</td>
+            <td class="py-3 px-4 text-xs italic text-slate-500">${escapeHtml(t.condition || 'Operational')}</td>
+            <td class="py-3 px-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="editTool('${t.id}', '${site.id}')" class="px-2.5 py-1 text-xs font-bold bg-sky-50 hover:bg-sky-100 text-sky-700 rounded transition inline-flex items-center gap-1" title="Edit Tool Details">
+                  <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                </button>
+                <button onclick="deleteTool('${t.id}', '${site.id}')" class="p-1.5 text-slate-400 hover:text-rose-600" title="Delete Tool">
+                  <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openToolModal(preselectedSiteId = null) {
+      document.getElementById('toolForm').reset();
+      document.getElementById('toolId').value = '';
+      const targetSite = preselectedSiteId || currentSiteId || sites[0]?.id || '';
+      document.getElementById('toolOriginalSiteId').value = targetSite;
+      populateResourceSiteSelect('toolSiteSelect', targetSite);
+      document.getElementById('toolModalTitle').innerHTML = '<i class="fa-solid fa-screwdriver-wrench text-sky-400"></i> Assign Equipment to Site';
+      openModal('toolModal');
+    }
+
+    function editTool(id, siteId = null) {
+      const originSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === originSiteId) || getCurrentSite();
+      if (!site) return;
+
+      const tool = (site.tools || []).find(t => t.id === id);
+      if (!tool) return;
+
+      document.getElementById('toolId').value = tool.id;
+      document.getElementById('toolOriginalSiteId').value = site.id;
+      populateResourceSiteSelect('toolSiteSelect', site.id);
+
+      document.getElementById('toolName').value = tool.name;
+      document.getElementById('toolSerial').value = tool.serial || '';
+      document.getElementById('toolQuantity').value = tool.quantity || 1;
+      document.getElementById('toolStatus').value = tool.status;
+      document.getElementById('toolAssignedTo').value = tool.assignedTo || '';
+      document.getElementById('toolCondition').value = tool.condition || '';
+      document.getElementById('toolModalTitle').innerHTML = '<i class="fa-solid fa-pen text-sky-400"></i> Edit Equipment Details';
+      openModal('toolModal');
+    }
+
+    function saveTool(e) {
+      e.preventDefault();
+      const id = document.getElementById('toolId').value;
+      const originalSiteId = document.getElementById('toolOriginalSiteId').value;
+      const targetSiteId = document.getElementById('toolSiteSelect').value || currentSiteId;
+      const targetSite = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!targetSite) return;
+
+      const newTool = {
+        id: id || 't_' + Date.now(),
+        name: document.getElementById('toolName').value.trim(),
+        serial: document.getElementById('toolSerial').value.trim(),
+        quantity: parseInt(document.getElementById('toolQuantity').value) || 1,
+        status: document.getElementById('toolStatus').value,
+        assignedTo: document.getElementById('toolAssignedTo').value.trim(),
+        condition: document.getElementById('toolCondition').value.trim()
+      };
+
+      if (!targetSite.tools) targetSite.tools = [];
+
+      if (id) {
+        if (originalSiteId && originalSiteId !== targetSite.id) {
+          const oldSite = sites.find(s => s.id === originalSiteId);
+          if (oldSite && oldSite.tools) {
+            oldSite.tools = oldSite.tools.filter(t => t.id !== id);
+          }
+          targetSite.tools.push(newTool);
+        } else {
+          const idx = targetSite.tools.findIndex(t => t.id === id);
+          if (idx !== -1) targetSite.tools[idx] = newTool;
+        }
+        showToast('Tool details updated.');
+      } else {
+        targetSite.tools.push(newTool);
+        showToast(`Tool assigned to ${targetSite.name}.`);
+      }
+
+      closeModal('toolModal');
+      syncStorage();
+      refreshActiveViews();
+    }
+
+    function deleteTool(id, siteId = null) {
+      const targetSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!site) return;
+
+      showConfirm('Delete Tool?', `Remove this tool from ${site.name} inventory?`, () => {
+        site.tools = (site.tools || []).filter(t => t.id !== id);
+        syncStorage();
+        refreshActiveViews();
+        showToast('Tool deleted from site.');
+      });
+    }
+
+    // ========================================================
+    // SITE DRILLDOWN: VISITS & DISPATCHES
+    // ========================================================
+    function renderCurrentSiteVisits() {
+      const site = getCurrentSite();
+      const container = document.getElementById('siteVisitsList');
+      const emptyMsg = document.getElementById('noSiteVisits');
+      if (!site || !container || !emptyMsg) return;
+
+      const list = site.visits || [];
+      if (list.length === 0) {
+        container.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      container.innerHTML = list.map(v => {
+        const dateFormatted = v.date ? new Date(v.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'N/A';
+
+        return `
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:border-slate-300 transition space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-van-shuttle"></i>
+                </span>
+                <div>
+                  <h4 class="font-bold text-slate-900 text-xs sm:text-sm">${escapeHtml(v.purpose)}</h4>
+                  <span class="text-[10px] text-slate-400 font-medium">${dateFormatted}</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                <button onclick="deleteSiteVisit('${v.id}')" class="text-xs text-slate-400 hover:text-rose-600 p-1" title="Delete Visit">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Details Grid: Who, Tools, Materials -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <p class="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1 mb-1">
+                  <i class="fa-solid fa-users text-emerald-600"></i> Who Went / Visited
+                </p>
+                <p class="text-slate-800 font-semibold text-xs leading-snug">${escapeHtml(v.visitors || 'None specified')}</p>
+              </div>
+
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <p class="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1 mb-1">
+                  <i class="fa-solid fa-screwdriver-wrench text-sky-600"></i> Tools Carried
+                </p>
+                <p class="text-slate-800 font-semibold text-xs leading-snug">${escapeHtml(v.tools || 'No equipment carried')}</p>
+              </div>
+
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <p class="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1 mb-1">
+                  <i class="fa-solid fa-cubes text-amber-600"></i> Materials & Exact Amount
+                </p>
+                <p class="text-slate-800 font-semibold text-xs leading-snug">${escapeHtml(v.materials || 'No materials')}</p>
+              </div>
+            </div>
+
+            ${v.notes ? `
+              <div class="text-[11px] text-slate-600 bg-slate-50/70 p-2 rounded-lg italic">
+                <strong class="font-bold text-slate-700 not-italic">Notes:</strong> ${escapeHtml(v.notes)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openVisitModal(targetSiteId = null) {
+      document.getElementById('visitForm').reset();
+      document.getElementById('visitId').value = '';
+
+      const select = document.getElementById('visitTargetSite');
+      select.innerHTML = sites.map(s => `
+        <option value="${s.id}" ${(targetSiteId || currentSiteId) === s.id ? 'selected' : ''}>${escapeHtml(s.name)}</option>
+      `).join('');
+
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('visitDateTime').value = now.toISOString().slice(0, 16);
+
+      updateVisitModalResourceLists(select.value);
+      openModal('visitModal');
+    }
+
+    function updateVisitModalResourceLists(siteId) {
+      const site = sites.find(s => s.id === siteId) || getCurrentSite();
+      const staffChips = document.getElementById('quickStaffChips');
+      const toolChips = document.getElementById('quickToolChips');
+
+      if (!site) return;
+
+      if (staffChips) {
+        staffChips.innerHTML = (site.staff || []).map(st => `
+          <button type="button" onclick="appendVisitor('${escapeHtml(st.name)}')" class="text-[10px] bg-white border border-slate-300 hover:border-emerald-500 hover:text-emerald-700 px-2 py-0.5 rounded-md font-medium transition">
+            + ${escapeHtml(st.name)} (${escapeHtml(st.trade)})
+          </button>
+        `).join('') || '<span class="text-[10px] text-slate-400">No staff registered for this site</span>';
+      }
+
+      if (toolChips) {
+        toolChips.innerHTML = (site.tools || []).map(tl => `
+          <button type="button" onclick="appendTool('${escapeHtml(tl.name)}')" class="text-[10px] bg-white border border-slate-300 hover:border-sky-500 hover:text-sky-700 px-2 py-0.5 rounded-md font-medium transition">
+            + ${escapeHtml(tl.name)}
+          </button>
+        `).join('') || '<span class="text-[10px] text-slate-400">No tools recorded</span>';
+      }
+    }
+
+    function appendVisitor(name) {
+      const input = document.getElementById('visitVisitors');
+      if (!input.value) {
+        input.value = name;
+      } else if (!input.value.includes(name)) {
+        input.value += `, ${name}`;
+      }
+    }
+
+    function appendTool(toolName) {
+      const input = document.getElementById('visitTools');
+      if (!input.value) {
+        input.value = toolName;
+      } else if (!input.value.includes(toolName)) {
+        input.value += `, ${toolName}`;
+      }
+    }
+
+    function saveSiteVisit(e) {
+      e.preventDefault();
+      const siteId = document.getElementById('visitTargetSite').value;
+      const site = sites.find(s => s.id === siteId);
+      if (!site) return;
+
+      const newVisit = {
+        id: 'v_' + Date.now(),
+        siteId,
+        purpose: document.getElementById('visitPurpose').value,
+        date: document.getElementById('visitDateTime').value,
+        visitors: document.getElementById('visitVisitors').value.trim(),
+        tools: document.getElementById('visitTools').value.trim(),
+        materials: document.getElementById('visitMaterials').value.trim(),
+        notes: document.getElementById('visitNotes').value.trim(),
+        status: 'Completed'
+      };
+
+      if (!site.visits) site.visits = [];
+      site.visits.unshift(newVisit);
+
+      if (!site.logs) site.logs = [];
+      site.logs.unshift({
+        id: 'l_v_' + Date.now(),
+        category: 'Material Delivery',
+        text: `Visit Logged: ${newVisit.purpose}. Personnel: ${newVisit.visitors}. Tools: ${newVisit.tools || 'None'}. Materials: ${newVisit.materials || 'None'}.`,
+        time: 'Just now'
+      });
+
+      closeModal('visitModal');
+      syncStorage();
+      refreshActiveViews();
+      showToast('Site visit & field dispatch recorded!');
+    }
+
+    function deleteSiteVisit(id) {
+      const site = getCurrentSite();
+      showConfirm('Delete Visit Record?', 'Are you sure you want to remove this visit record?', () => {
+        site.visits = (site.visits || []).filter(v => v.id !== id);
+        syncStorage();
+        loadCurrentSiteData();
+        showToast('Visit record deleted.');
+      });
+    }
+
+    // ========================================================
+    // STAFF CRUD (WORKS FROM SINGLE SITE & MASTER HUB)
+    // ========================================================
+    function renderCurrentSiteStaff() {
+      const site = getCurrentSite();
+      const tbody = document.getElementById('siteStaffTableBody');
+      const emptyMsg = document.getElementById('noSiteStaff');
+      if (!site || !tbody || !emptyMsg) return;
+
+      const list = site.staff || [];
+      if (list.length === 0) {
+        tbody.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      tbody.innerHTML = list.map(s => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-[10px] uppercase">
+                ${escapeHtml((s.name || 'W').slice(0, 2))}
+              </div>
+              <div>
+                <span class="font-bold text-slate-900 block text-xs">${escapeHtml(s.name)}</span>
+                <span class="text-[10px] text-slate-400">ID: #${s.id.slice(-4)}</span>
+              </div>
+            </div>
+          </td>
+          <td class="py-3 px-4">
+            <span class="inline-block bg-slate-100 text-slate-700 text-[11px] px-2.5 py-0.5 rounded font-medium border border-slate-200">
+              ${escapeHtml(s.trade)}
+            </span>
+          </td>
+          <td class="py-3 px-4 font-mono text-xs text-slate-600">
+            <i class="fa-solid fa-phone text-slate-400 mr-1 text-[10px]"></i>${escapeHtml(s.phone)}
+          </td>
+          <td class="py-3 px-4 text-xs text-slate-500">
+            ${escapeHtml(s.emergency || 'N/A')}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="toggleStaffPresence('${s.id}')" class="px-3 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1.5 transition ${s.present ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 hover:bg-rose-200'}">
+              <span class="w-1.5 h-1.5 rounded-full ${s.present ? 'bg-emerald-600' : 'bg-rose-500'}"></span>
+              ${s.present ? 'Working On Site' : 'Absent'}
+            </button>
+          </td>
+          <td class="py-3 px-4 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              <button onclick="editStaff('${s.id}', '${site.id}')" class="px-2.5 py-1 text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded transition inline-flex items-center gap-1" title="Edit Worker Details">
+                <i class="fa-solid fa-user-pen text-[10px]"></i> Edit
+              </button>
+              <button onclick="deleteStaff('${s.id}', '${site.id}')" class="p-1.5 text-slate-400 hover:text-rose-600" title="Remove Worker">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openStaffModal(preselectedSiteId = null) {
+      document.getElementById('staffForm').reset();
+      document.getElementById('staffId').value = '';
+      const targetSite = preselectedSiteId || currentSiteId || sites[0]?.id || '';
+      document.getElementById('staffOriginalSiteId').value = targetSite;
+      populateResourceSiteSelect('staffSiteSelect', targetSite);
+      document.getElementById('staffModalTitle').innerHTML = '<i class="fa-solid fa-user-plus text-emerald-400"></i> Register Worker to Site';
+      openModal('staffModal');
+    }
+
+    function editStaff(id, siteId = null) {
+      const originSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === originSiteId) || getCurrentSite();
+      if (!site) return;
+
+      const person = (site.staff || []).find(s => s.id === id);
+      if (!person) return;
+
+      document.getElementById('staffId').value = person.id;
+      document.getElementById('staffOriginalSiteId').value = site.id;
+      populateResourceSiteSelect('staffSiteSelect', site.id);
+
+      document.getElementById('staffFullName').value = person.name;
+      document.getElementById('staffTrade').value = person.trade;
+      document.getElementById('staffPhone').value = person.phone;
+      document.getElementById('staffEmergency').value = person.emergency || '';
+      document.getElementById('staffPresent').value = person.present ? 'true' : 'false';
+      document.getElementById('staffModalTitle').innerHTML = '<i class="fa-solid fa-user-pen text-emerald-400"></i> Edit Worker Details';
+      openModal('staffModal');
+    }
+
+    function saveStaff(e) {
+      e.preventDefault();
+      const id = document.getElementById('staffId').value;
+      const originalSiteId = document.getElementById('staffOriginalSiteId').value;
+      const targetSiteId = document.getElementById('staffSiteSelect').value || currentSiteId;
+      const targetSite = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!targetSite) return;
+
+      const newStaff = {
+        id: id || 's_' + Date.now(),
+        name: document.getElementById('staffFullName').value.trim(),
+        trade: document.getElementById('staffTrade').value,
+        phone: document.getElementById('staffPhone').value.trim(),
+        emergency: document.getElementById('staffEmergency').value.trim(),
+        present: document.getElementById('staffPresent').value === 'true'
+      };
+
+      if (!targetSite.staff) targetSite.staff = [];
+
+      if (id) {
+        if (originalSiteId && originalSiteId !== targetSite.id) {
+          const oldSite = sites.find(s => s.id === originalSiteId);
+          if (oldSite && oldSite.staff) {
+            oldSite.staff = oldSite.staff.filter(s => s.id !== id);
+          }
+          targetSite.staff.push(newStaff);
+        } else {
+          const idx = targetSite.staff.findIndex(s => s.id === id);
+          if (idx !== -1) targetSite.staff[idx] = newStaff;
+        }
+        showToast('Worker details updated.');
+      } else {
+        targetSite.staff.push(newStaff);
+        showToast(`Worker assigned to ${targetSite.name}.`);
+      }
+
+      closeModal('staffModal');
+      syncStorage();
+      refreshActiveViews();
+    }
+
+    function toggleStaffPresence(id) {
+      const site = getCurrentSite();
+      const person = (site.staff || []).find(s => s.id === id);
+      if (!person) return;
+
+      person.present = !person.present;
+      syncStorage();
+      refreshActiveViews();
+      showToast(`${person.name} is now marked ${person.present ? 'Present' : 'Absent'}`);
+    }
+
+    function deleteStaff(id, siteId = null) {
+      const targetSiteId = siteId || currentSiteId;
+      const site = sites.find(s => s.id === targetSiteId) || getCurrentSite();
+      if (!site) return;
+
+      showConfirm('Remove Worker?', `Remove this worker from ${site.name}?`, () => {
+        site.staff = (site.staff || []).filter(s => s.id !== id);
+        syncStorage();
+        refreshActiveViews();
+        showToast('Worker removed from site.');
+      });
+    }
+
+    // ========================================================
+    // SITE DRILLDOWN: DAILY LOGS
+    // ========================================================
+    function renderCurrentSiteLogs() {
+      const site = getCurrentSite();
+      const listContainer = document.getElementById('siteDailyLogsList');
+      const emptyMsg = document.getElementById('noSiteLogs');
+      if (!site) return;
+
+      const list = site.logs || [];
+      if (list.length === 0) {
+        listContainer.innerHTML = '';
+        emptyMsg.classList.remove('hidden');
+        return;
+      }
+      emptyMsg.classList.add('hidden');
+
+      listContainer.innerHTML = list.map(log => {
+        let icon = 'fa-clipboard-check';
+        let color = 'text-sky-500 bg-sky-50 border-sky-100';
+        if (log.category === 'Material Delivery') {
+          icon = 'fa-truck-ramp-box';
+          color = 'text-amber-500 bg-amber-50 border-amber-100';
+        } else if (log.category === 'Safety & Weather') {
+          icon = 'fa-triangle-exclamation';
+          color = 'text-rose-500 bg-rose-50 border-rose-100';
+        } else if (log.category === 'Engineer Inspection') {
+          icon = 'fa-stamp';
+          color = 'text-emerald-500 bg-emerald-50 border-emerald-100';
+        }
+
+        return `
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg ${color} border flex items-center justify-center text-sm flex-shrink-0">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div class="flex-grow">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">${escapeHtml(log.category)}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(log.time)}</span>
+              </div>
+              <p class="text-xs text-slate-700 mt-1 leading-relaxed">${escapeHtml(log.text)}</p>
+            </div>
+            <button onclick="deleteLog('${log.id}')" class="text-slate-300 hover:text-rose-500 text-xs p-1" title="Delete Log">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openLogModal() {
+      document.getElementById('logForm').reset();
+      openModal('logModal');
+    }
+
+    function saveLog(e) {
+      e.preventDefault();
+      const site = getCurrentSite();
+      if (!site) return;
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' Today';
+
+      const newLog = {
+        id: 'l_' + Date.now(),
+        category: document.getElementById('logCategory').value,
+        text: document.getElementById('logText').value.trim(),
+        time: timeStr
+      };
+
+      if (!site.logs) site.logs = [];
+      site.logs.unshift(newLog);
+
+      closeModal('logModal');
+      syncStorage();
+      loadCurrentSiteData();
+      showToast('New site journal note added.');
+    }
+
+    function deleteLog(id) {
+      const site = getCurrentSite();
+      site.logs = (site.logs || []).filter(l => l.id !== id);
+      syncStorage();
+      loadCurrentSiteData();
+      showToast('Journal note deleted.');
+    }
+
+    // ========================================================
+    // SITE MANAGEMENT (CREATE / EDIT / DELETE SITES)
+    // ========================================================
+    function openNewSiteModal() {
+      document.getElementById('siteForm').reset();
+      document.getElementById('formSiteId').value = '';
+      document.getElementById('formSiteProgress').value = '10';
+      document.getElementById('siteModalTitle').innerHTML = '<i class="fa-solid fa-building text-amber-400"></i> Create New Work Site';
+      openModal('siteModal');
+    }
+
+    function openEditSiteModal() {
+      const site = getCurrentSite();
+      if (!site) return;
+
+      document.getElementById('formSiteId').value = site.id;
+      document.getElementById('formSiteName').value = site.name;
+      document.getElementById('formSiteLocation').value = site.location;
+      document.getElementById('formSiteManager').value = site.manager;
+      document.getElementById('formSiteStatus').value = site.status || 'Active';
+      document.getElementById('formSiteProgress').value = site.progress || 0;
+      document.getElementById('siteModalTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-400"></i> Edit Work Site Info';
+      openModal('siteModal');
+    }
+
+    function saveSite(e) {
+      e.preventDefault();
+      const id = document.getElementById('formSiteId').value;
+      const name = document.getElementById('formSiteName').value.trim();
+      const location = document.getElementById('formSiteLocation').value.trim();
+      const manager = document.getElementById('formSiteManager').value.trim();
+      const status = document.getElementById('formSiteStatus').value;
+      const progress = parseInt(document.getElementById('formSiteProgress').value) || 0;
+
+      if (id) {
+        const site = sites.find(s => s.id === id);
+        if (site) {
+          site.name = name;
+          site.location = location;
+          site.manager = manager;
+          site.status = status;
+          site.progress = progress;
+          showToast('Work site info updated.');
+        }
+      } else {
+        const newSite = {
+          id: 'site-' + (sites.length + 1) + '-' + Math.floor(Math.random() * 1000),
+          name,
+          location,
+          manager,
+          status,
+          progress,
+          materials: [],
+          tools: [],
+          staff: [],
+          visits: [],
+          logs: [
+            { id: 'l_init', category: 'Progress', text: 'Work site created and initialized in SiteFlow.', time: 'Just now' }
+          ]
+        };
+        sites.push(newSite);
+        setActiveSiteId(newSite.id);
+        showToast('New work site created!');
+      }
+
+      closeModal('siteModal');
+      syncStorage();
+      refreshActiveViews();
+    }
+
+    function deleteCurrentSite() {
+      const site = getCurrentSite();
+      if (!site) return;
+
+      showConfirm(`Delete "${site.name}"?`, 'This will permanently remove this site and all its allocated materials, tools, crew, and logs.', () => {
+        sites = sites.filter(s => s.id !== site.id);
+        setActiveSiteId(sites[0]?.id || null);
+        syncStorage();
+        goToSitesList();
+        showToast('Site permanently deleted.');
+      });
+    }
+
+    // Utility: XSS prevention
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Expose helpers to window so DOM event handlers can trigger them
+    window.goToSitesList = goToSitesList;
+    window.goToMasterDirectory = goToMasterDirectory;
+    window.switchMasterTab = switchMasterTab;
+    window.renderMasterCurrentTab = renderMasterCurrentTab;
+    window.toggleMasterStaffPresence = toggleMasterStaffPresence;
+    window.quickReplenishMasterMaterial = quickReplenishMasterMaterial;
+    window.setMasterToolStatus = setMasterToolStatus;
+    window.openSiteDetails = openSiteDetails;
+    window.handleSiteSelectChange = handleSiteSelectChange;
+    window.switchSiteTab = switchSiteTab;
+    window.openMaterialModal = openMaterialModal;
+    window.editMaterial = editMaterial;
+    window.saveMaterial = saveMaterial;
+    window.deleteMaterial = deleteMaterial;
+    window.quickReplenishCurrentMaterial = quickReplenishCurrentMaterial;
+    window.openUseMaterialModal = openUseMaterialModal;
+    window.submitUseMaterial = submitUseMaterial;
+    window.openToolModal = openToolModal;
+    window.editTool = editTool;
+    window.saveTool = saveTool;
+    window.deleteTool = deleteTool;
+    window.openStaffModal = openStaffModal;
+    window.editStaff = editStaff;
+    window.saveStaff = saveStaff;
+    window.toggleStaffPresence = toggleStaffPresence;
+    window.deleteStaff = deleteStaff;
+    window.openVisitModal = openVisitModal;
+    window.saveSiteVisit = saveSiteVisit;
+    window.deleteSiteVisit = deleteSiteVisit;
+    window.updateVisitModalResourceLists = updateVisitModalResourceLists;
+    window.appendVisitor = appendVisitor;
+    window.appendTool = appendTool;
+    window.openLogModal = openLogModal;
+    window.saveLog = saveLog;
+    window.deleteLog = deleteLog;
+    window.openNewSiteModal = openNewSiteModal;
+    window.openEditSiteModal = openEditSiteModal;
+    window.saveSite = saveSite;
+    window.deleteCurrentSite = deleteCurrentSite;
+    window.closeConfirmModal = closeConfirmModal;
+    window.closeModal = closeModal;
+    window.openModal = openModal;
+    window.openBrandingModal = openBrandingModal;
+    window.updateLiveIconPreview = updateLiveIconPreview;
+    window.applyPresetAppIcon = applyPresetAppIcon;
+    window.handleIconFileUpload = handleIconFileUpload;
+    window.saveBrandingSettings = saveBrandingSettings;
+  </script>
+</body>
+</html>
