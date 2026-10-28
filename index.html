@@ -285,8 +285,8 @@
             <span class="hidden md:inline">Sites</span>
           </button>
 
-          <!-- Master Directory (Staff, Materials, Tools across all sites) -->
-          <button onclick="goToMasterDirectory('staff')" class="inline-flex items-center gap-1.5 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 sm:px-3 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="All Staff, Materials, and Tools Directory">
+          <!-- Master Directory (Staff, Materials, Tools independently managed) -->
+          <button onclick="goToMasterDirectory('staff')" class="inline-flex items-center gap-1.5 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2.5 sm:px-3 py-2 rounded-lg font-bold transition shadow-sm active:scale-95" title="Independent Staff, Materials, and Tools Hub">
             <i class="fa-solid fa-boxes-stacked"></i>
             <span class="hidden sm:inline">Master Hub</span>
           </button>
@@ -352,20 +352,20 @@
       <div>
         <div class="flex flex-wrap items-center gap-2 mb-2">
           <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800" id="heroBadgeAppName">SiteFlow Command</span>
-          <span class="text-xs text-slate-400 font-medium">&bull; Multi-Site Construction & Resource Tracker</span>
+          <span class="text-xs text-slate-400 font-medium">&bull; Multi-Site Construction & Independent Resource Hub</span>
           <button onclick="openBrandingModal()" class="text-[11px] font-bold text-amber-600 hover:text-amber-700 underline ml-1 inline-flex items-center gap-1">
             <i class="fa-solid fa-mobile-screen"></i> Customize App Name & Android/iOS Icons
           </button>
         </div>
         <h1 class="text-2xl md:text-3xl font-black text-slate-900">Work Sites Command Center</h1>
         <p class="text-sm text-slate-600 mt-1 max-w-2xl">
-          Track crew deployment, tools checked out, materials used with price calculations, site expenses, and daily interval checklists across every ongoing project.
+          Manage ongoing construction sites, independent staff/workers, materials with price calculations, tool inventory, and daily work logs with interval checklists and photo updates.
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
         <button onclick="goToMasterDirectory('staff')" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold px-4 py-3 rounded-xl border border-slate-300 transition active:scale-95">
           <i class="fa-solid fa-layer-group text-sky-600"></i>
-          <span>Manage All Staff / Tools / Materials</span>
+          <span>Independent Resource Hub (Staff, Materials, Tools)</span>
         </button>
         <button onclick="openNewSiteModal()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow-md transition active:scale-95">
           <i class="fa-solid fa-plus text-amber-400"></i>
@@ -374,7 +374,7 @@
       </div>
     </div>
 
-    <!-- Quick Stats across all sites -->
+    <!-- Quick Stats across portfolio -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
         <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Active Sites</p>
@@ -383,7 +383,7 @@
       </div>
       <div onclick="goToMasterDirectory('staff')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-emerald-400 transition group">
         <div class="flex items-center justify-between">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600">Workers Assigned</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600">Independent Staff</p>
           <i class="fa-solid fa-user-plus text-xs text-slate-300 group-hover:text-emerald-600"></i>
         </div>
         <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalStaff">0</h3>
@@ -391,7 +391,7 @@
       </div>
       <div onclick="goToMasterDirectory('tools')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-sky-400 transition group">
         <div class="flex items-center justify-between">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-sky-600">Tools Deployed</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-sky-600">Total Tools</p>
           <i class="fa-solid fa-screwdriver-wrench text-xs text-slate-300 group-hover:text-sky-600"></i>
         </div>
         <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalTools">0</h3>
@@ -399,7 +399,7 @@
       </div>
       <div onclick="goToMasterDirectory('materials')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition group">
         <div class="flex items-center justify-between">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-amber-600">Materials In Use</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-amber-600">Material Items</p>
           <i class="fa-solid fa-cubes text-xs text-slate-300 group-hover:text-amber-600"></i>
         </div>
         <h3 class="text-2xl font-black text-slate-900 mt-1" id="statTotalMaterials">0</h3>
@@ -433,7 +433,7 @@
   <!-- ======================================================== -->
   <main id="singleSiteView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
 
-    <!-- Top Site Info Card -->
+    <!-- Top Site Info Card (Includes Site Settings & 10-Field Visit Report) -->
     <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -444,19 +444,22 @@
             <h1 class="text-2xl font-black text-slate-900" id="currentSiteName">Downtown Tower Block B</h1>
             <span id="currentSiteStatusBadge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>
           </div>
-          <p class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+          <p class="text-xs text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
             <i class="fa-solid fa-location-dot text-amber-500"></i>
             <span id="currentSiteLocation">124 Main Street, Financial District</span>
             <span class="text-slate-300">|</span>
             <i class="fa-solid fa-user-tie text-slate-400"></i>
             <span>Lead: <strong class="text-slate-700" id="currentSiteManager">Carlos Mendez</strong></span>
+            <span class="text-slate-300">|</span>
+            <i class="fa-solid fa-building-user text-sky-600"></i>
+            <span>Client: <strong class="text-slate-700" id="currentSiteCustomer">Apex Real Estate</strong></span>
           </p>
         </div>
 
         <div class="flex items-center gap-2 flex-wrap">
           <button onclick="openEditSiteModal()" class="inline-flex items-center gap-1.5 text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2.5 rounded-xl font-bold transition shadow-sm active:scale-95">
             <i class="fa-solid fa-gear text-amber-400"></i>
-            <span>Site Settings & Visit Report</span>
+            <span>Site Settings & 10-Field Report</span>
           </button>
           <button onclick="deleteCurrentSite()" class="inline-flex items-center gap-1.5 text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2.5 rounded-xl font-bold transition" title="Delete this site">
             <i class="fa-solid fa-trash-can"></i>
@@ -668,12 +671,12 @@
       </div>
     </div>
 
-    <!-- SUB-TAB 5: WORK LOG & CHECKLISTS (TIME INTERVALS & PHOTOS) -->
+    <!-- SUB-TAB 5: WORK LOG & CHECKLISTS (TIME INTERVALS & MULTI-PHOTOS) -->
     <div id="siteSub-logs" class="hidden space-y-4">
       <div class="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h3 class="text-sm font-bold text-slate-900">Work Log & Interval Checklists (With Photo Updates)</h3>
-          <p class="text-xs text-slate-500">Track daily milestones: Site arrival, material check, tea/lunch, custom checklists, and photo updates.</p>
+          <h3 class="text-sm font-bold text-slate-900">Work Log & Interval Checklists (With Multiple Photo Attachments)</h3>
+          <p class="text-xs text-slate-500">Track daily milestones: Site arrival, material check, tea/lunch, custom interval checklists, and multiple progress photos.</p>
         </div>
         <button onclick="openLogModal()" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition shadow-sm">
           <i class="fa-solid fa-plus"></i> New Daily Work Log
@@ -692,7 +695,7 @@
   </main>
 
   <!-- ======================================================== -->
-  <!-- VIEW 3: MASTER DIRECTORY (ALL STAFF, MATERIALS & TOOLS)  -->
+  <!-- VIEW 3: MASTER DIRECTORY (INDEPENDENT STAFF, MATERIALS & TOOLS) -->
   <!-- ======================================================== -->
   <main id="masterDirectoryView" class="hidden max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 flex-grow w-full space-y-4 sm:space-y-6">
     
@@ -705,11 +708,11 @@
       <div class="flex items-center gap-2 flex-wrap">
         <button onclick="openStaffModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
           <i class="fa-solid fa-user-plus"></i>
-          <span>+ Add Staff</span>
+          <span>+ Add Independent Staff</span>
         </button>
         <button onclick="openMaterialModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
           <i class="fa-solid fa-cubes"></i>
-          <span>+ Add Material</span>
+          <span>+ Add Material Item</span>
         </button>
         <button onclick="openToolModal()" class="inline-flex items-center gap-1.5 text-xs font-bold bg-sky-600 hover:bg-sky-700 text-white px-3 py-2 rounded-xl shadow-sm transition active:scale-95">
           <i class="fa-solid fa-screwdriver-wrench"></i>
@@ -722,10 +725,10 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-cubes-stacked text-amber-500"></i>
-            <span>Master Resource Directory</span>
+            <i class="fa-solid fa-boxes-stacked text-amber-500"></i>
+            <span>Independent Resource Master Hub</span>
           </h2>
-          <p class="text-xs text-slate-500 mt-0.5">Add, edit, or reassign any worker, tool, or material across all active job sites.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Manage all staff, material stock items, and tools independently. Assign or reassign them to any active site whenever needed.</p>
         </div>
       </div>
 
@@ -751,7 +754,7 @@
         </div>
         <div class="w-full sm:w-60 flex-shrink-0">
           <select id="masterSiteFilter" onchange="renderMasterCurrentTab()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg py-2 px-2.5 font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 cursor-pointer">
-            <option value="ALL">All Work Sites (Unified)</option>
+            <option value="ALL">All Independent & Assigned Resources</option>
           </select>
         </div>
       </div>
@@ -760,7 +763,7 @@
     <!-- MASTER PANEL 1: ALL STAFF -->
     <div id="masterSection-staff" class="space-y-3">
       <div class="flex items-center justify-between text-xs text-slate-500 px-1">
-        <span>Use Edit (<i class="fa-solid fa-pen"></i>) on any card to modify worker details or reassign site</span>
+        <span>Manage independent workers, toggle duty status, or reassign sites</span>
         <span class="font-semibold text-emerald-700" id="masterStaffPresentRatio">0 on duty</span>
       </div>
       <div id="masterStaffList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -775,7 +778,7 @@
     <!-- MASTER PANEL 2: ALL MATERIALS -->
     <div id="masterSection-materials" class="hidden space-y-3">
       <div class="flex items-center justify-between text-xs text-slate-500 px-1">
-        <span>Tap Edit (<i class="fa-solid fa-pen"></i>) to change material quota, price/unit, category, unit, or site</span>
+        <span>Manage material stock, price per unit, and site allocation</span>
         <span class="font-semibold text-amber-700" id="masterMaterialsLowRatio">0 low alert</span>
       </div>
       <div id="masterMaterialsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -790,7 +793,7 @@
     <!-- MASTER PANEL 3: ALL TOOLS -->
     <div id="masterSection-tools" class="hidden space-y-3">
       <div class="flex items-center justify-between text-xs text-slate-500 px-1">
-        <span>Tap Edit (<i class="fa-solid fa-pen"></i>) to update tool serial, quantity, custody, or site</span>
+        <span>Manage tool inventory, condition, custody, and site assignment</span>
         <span class="font-semibold text-sky-700" id="masterToolsInUseRatio">0 in use</span>
       </div>
       <div id="masterToolsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -808,12 +811,12 @@
   <!-- MODALS (ADMIN & RESOURCE CONTROLS)                      -->
   <!-- ======================================================== -->
 
-  <!-- MODAL 1: NEW / EDIT SITE & SITE VISIT REPORT (10 FIELDS) -->
+  <!-- MODAL 1: NEW / EDIT SITE & 10-FIELD VISIT REPORT -->
   <div id="siteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-200 my-8">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <h3 class="font-bold text-sm flex items-center gap-2" id="siteModalTitle">
-          <i class="fa-solid fa-building text-amber-400"></i> Work Site Settings & Visit Report
+          <i class="fa-solid fa-building text-amber-400"></i> Work Site Settings & Official Report
         </h3>
         <button onclick="closeModal('siteModal')" class="text-slate-400 hover:text-white">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -825,21 +828,28 @@
         <!-- Section A: Site General Info -->
         <div class="space-y-3">
           <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] border-b pb-1 flex items-center gap-1.5">
-            <i class="fa-solid fa-location-dot text-amber-500"></i> General Site Information
+            <i class="fa-solid fa-location-dot text-amber-500"></i> 1 & 2. General Site Information
           </h4>
           <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Site / Project Name *</label>
-            <input type="text" id="formSiteName" required placeholder="e.g. Skyline Residency Phase 2" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <label class="block font-bold text-slate-700 uppercase mb-1">1. Site Name *</label>
+            <input type="text" id="formSiteName" required list="siteNameSuggestions" placeholder="e.g. Downtown Tower Block B" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <datalist id="siteNameSuggestions">
+              <option value="Downtown Tower Block B">
+              <option value="Harbor Marina Residential Complex">
+              <option value="Expressway Flyover Extension">
+              <option value="Skyline Residency Phase 2">
+            </datalist>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 uppercase mb-1">Physical Location / Address *</label>
-            <input type="text" id="formSiteLocation" required placeholder="e.g. Sector 44, North Highway Gate" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <label class="block font-bold text-slate-700 uppercase mb-1">2. Location *</label>
+            <input type="text" id="formSiteLocation" required list="locationSuggestions" placeholder="e.g. 124 Main Street, Financial District" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <datalist id="locationSuggestions">
+              <option value="124 Main Street, Financial District">
+              <option value="Pier 7, Waterfront Avenue">
+              <option value="Highway Interchange Exit 12">
+            </datalist>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label class="block font-bold text-slate-700 uppercase mb-1">Supervisor / Lead *</label>
-              <input type="text" id="formSiteManager" required placeholder="e.g. Carlos Mendez" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
-            </div>
             <div>
               <label class="block font-bold text-slate-700 uppercase mb-1">Status *</label>
               <input type="text" id="formSiteStatus" required list="statusList" placeholder="Active Working" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
@@ -857,7 +867,7 @@
           </div>
         </div>
 
-        <!-- Section B: Site Visit Report (10 Fields Format) -->
+        <!-- Section B: Official Site Visit Report (10 Fields Format) -->
         <div class="space-y-3 pt-2">
           <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] border-b pb-1 flex items-center gap-1.5">
             <i class="fa-solid fa-file-lines text-sky-600"></i> Official Site Visit Report (10 Fields)
@@ -866,23 +876,43 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block font-bold text-slate-700 uppercase mb-1">3. Customer Name</label>
-              <input type="text" id="visitCustomerName" placeholder="e.g. Apex Real Estate Corp" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <input type="text" id="visitCustomerName" list="customerSuggestions" placeholder="e.g. Apex Real Estate Corp" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <datalist id="customerSuggestions">
+                <option value="Apex Real Estate Corp">
+                <option value="Harbor Development Authority">
+                <option value="State Transport Infrastructure Board">
+              </datalist>
             </div>
             <div>
-              <label class="block font-bold text-slate-700 uppercase mb-1">5. Date of Work</label>
-              <input type="date" id="visitDateOfWork" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <label class="block font-bold text-slate-700 uppercase mb-1">4. Supervisor's Name</label>
+              <input type="text" id="formSiteManager" required list="supervisorSuggestions" placeholder="e.g. Carlos Mendez" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+              <datalist id="supervisorSuggestions">
+                <option value="Carlos Mendez">
+                <option value="Elena Rostova">
+                <option value="David Kalu">
+              </datalist>
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
+              <label class="block font-bold text-slate-700 uppercase mb-1">5. Date of Work</label>
+              <input type="date" id="visitDateOfWork" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            </div>
+            <div>
               <label class="block font-bold text-slate-700 uppercase mb-1">6. Start Time</label>
               <input type="time" id="visitStartTime" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 uppercase mb-1">7. Type of Work</label>
-              <input type="text" id="visitTypeOfWork" placeholder="e.g. Foundation Pour & Rebar Grid" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
-            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 uppercase mb-1">7. Type of Work</label>
+            <input type="text" id="visitTypeOfWork" list="workTypeSuggestions" placeholder="e.g. Foundation Pour & Rebar Grid" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <datalist id="workTypeSuggestions">
+              <option value="Foundation Pour & Rebar Grid">
+              <option value="Marine Concrete Sealant & Excavation">
+              <option value="Asphalt Paving & Guardrail Installation">
+            </datalist>
           </div>
 
           <div>
@@ -910,12 +940,12 @@
     </div>
   </div>
 
-  <!-- MODAL 2: MATERIAL (WITH PRICE / UNIT) -->
+  <!-- MODAL 2: MATERIAL (WITH PRICE / UNIT & INDEPENDENT SITE SELECT) -->
   <div id="materialModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
     <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <h3 class="font-bold text-sm flex items-center gap-2" id="materialModalTitle">
-          <i class="fa-solid fa-cubes-stacked text-amber-400"></i> Manage Site Material
+          <i class="fa-solid fa-cubes-stacked text-amber-400"></i> Manage Material Item
         </h3>
         <button onclick="closeModal('materialModal')" class="text-slate-400 hover:text-white">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -926,13 +956,21 @@
         <input type="hidden" id="matOriginalSiteId">
 
         <div>
-          <label class="block font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
-          <select id="matSiteSelect" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50 font-semibold"></select>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Assigned Work Site (Optional / Independent)</label>
+          <select id="matSiteSelect" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none bg-slate-50 font-semibold"></select>
         </div>
 
         <div>
           <label class="block font-bold text-slate-700 uppercase mb-1">Material Name *</label>
-          <input type="text" id="matName" required placeholder="e.g. Portland Cement (50kg bags)" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          <input type="text" id="matName" required list="matNameSuggestions" placeholder="e.g. Portland Cement (50kg bags)" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+          <datalist id="matNameSuggestions">
+            <option value="Portland Cement (50kg bags)">
+            <option value="River Sand (Coarse)">
+            <option value="Steel Rebar (#4 1/2&quot;)">
+            <option value="Standard Red Clay Bricks">
+            <option value="Marine Grade Concrete Sealant">
+            <option value="Asphalt Binder Mix">
+          </datalist>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -951,7 +989,16 @@
           </div>
           <div>
             <label class="block font-bold text-slate-700 uppercase mb-1">Unit of Measure *</label>
-            <input type="text" id="matUnit" required placeholder="e.g. Bags, Tons, Bundles" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <input type="text" id="matUnit" required list="unitList" placeholder="Bags" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <datalist id="unitList">
+              <option value="Bags">
+              <option value="Cubic Yards">
+              <option value="Bundles">
+              <option value="Pallets">
+              <option value="Tons">
+              <option value="Barrels">
+              <option value="Pieces">
+            </datalist>
           </div>
         </div>
 
@@ -969,7 +1016,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block font-bold text-slate-700 uppercase mb-1">Price per Unit ($) *</label>
-            <input type="number" id="matPrice" required min="0" step="0.01" placeholder="e.g. 12.50" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono">
+            <input type="number" id="matPricePerUnit" required min="0" step="0.01" placeholder="e.g. 12.50" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono">
           </div>
           <div>
             <label class="block font-bold text-slate-700 uppercase mb-1">Min Threshold Alert</label>
@@ -1014,7 +1061,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <h3 class="font-bold text-sm flex items-center gap-2" id="toolModalTitle">
-          <i class="fa-solid fa-screwdriver-wrench text-sky-400"></i> Assign Equipment to Site
+          <i class="fa-solid fa-screwdriver-wrench text-sky-400"></i> Manage Tool / Equipment
         </h3>
         <button onclick="closeModal('toolModal')" class="text-slate-400 hover:text-white">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -1025,13 +1072,21 @@
         <input type="hidden" id="toolOriginalSiteId">
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
-          <select id="toolSiteSelect" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 font-semibold"></select>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site (Optional / Independent)</label>
+          <select id="toolSiteSelect" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-slate-50 font-semibold"></select>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tool / Machine Name *</label>
-          <input type="text" id="toolName" required placeholder="e.g. Heavy Rotary Hammer, Concrete Mixer" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          <input type="text" id="toolName" required list="toolSuggestions" placeholder="e.g. Heavy Rotary Hammer, Concrete Mixer" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+          <datalist id="toolSuggestions">
+            <option value="Rotary Hammer Drill SDS-Plus">
+            <option value="Portable Concrete Mixer 9 cu ft">
+            <option value="Laser Transit Level & Tripod">
+            <option value="Plate Compactor 6.5HP">
+            <option value="Submersible Sump Pump 3HP">
+            <option value="Heavy Arc Welder 250A">
+          </datalist>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -1048,16 +1103,16 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status on Site *</label>
-            <input type="text" id="toolStatus" required list="toolStatusList" placeholder="In Active Use" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <input type="text" id="toolStatus" required list="toolStatusList" placeholder="In Use" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
             <datalist id="toolStatusList">
-              <option value="In Active Use">
-              <option value="Depot / Standby">
+              <option value="In Use">
+              <option value="Available">
               <option value="Under Repair">
             </datalist>
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Worker Custody</label>
-            <input type="text" id="toolAssignedTo" placeholder="e.g. Dave Reynolds" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none">
+            <input type="text" id="toolAssignedTo" list="staffSuggestions" placeholder="e.g. Dave Reynolds" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
           </div>
         </div>
 
@@ -1079,7 +1134,7 @@
     <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
         <h3 class="font-bold text-sm flex items-center gap-2" id="staffModalTitle">
-          <i class="fa-solid fa-user-plus text-emerald-400"></i> Register Worker to Site
+          <i class="fa-solid fa-user-plus text-emerald-400"></i> Manage Staff / Worker Record
         </h3>
         <button onclick="closeModal('staffModal')" class="text-slate-400 hover:text-white">
           <i class="fa-solid fa-xmark text-lg"></i>
@@ -1090,8 +1145,8 @@
         <input type="hidden" id="staffOriginalSiteId">
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site *</label>
-          <select id="staffSiteSelect" required class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-slate-50 font-semibold"></select>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Assigned Work Site (Optional / Independent)</label>
+          <select id="staffSiteSelect" class="w-full text-xs border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-slate-50 font-semibold"></select>
         </div>
 
         <div>
@@ -1205,11 +1260,11 @@
     </div>
   </div>
 
-  <!-- MODAL 7: WORK LOG CHECKLIST MODAL (TIME INTERVALS, CUSTOM CHECKLISTS & PHOTOS) -->
+  <!-- MODAL 7: WORK LOG CHECKLIST MODAL (TIME INTERVALS, MULTI-PHOTOS & EDIT SUPPORT) -->
   <div id="logModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-200 my-8">
       <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
-        <h3 class="font-bold text-sm flex items-center gap-2">
+        <h3 class="font-bold text-sm flex items-center gap-2" id="logModalHeading">
           <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Daily Work Log & Time Interval Checklists
         </h3>
         <button onclick="closeModal('logModal')" class="text-slate-400 hover:text-white">
@@ -1229,7 +1284,7 @@
           <input type="text" id="logTitle" required placeholder="e.g. Daily Milestone Log - Oct 28" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-slate-700 focus:outline-none bg-white">
         </div>
 
-        <!-- TIME INTERVAL CHECKBOXES (DEFAULT & DYNAMIC CUSTOM) -->
+        <!-- TIME INTERVAL CHECKBOXES (DEFAULT & EDITABLE/DELETABLE DYNAMIC CUSTOM) -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
           <div class="flex items-center justify-between">
             <label class="block font-bold text-slate-800 uppercase tracking-wider">Interval Checklists *</label>
@@ -1240,23 +1295,23 @@
           
           <div id="logChecklistsContainer" class="space-y-2 text-xs">
             <!-- Default Item 1 -->
-            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 default-chk-item">
               <input type="checkbox" name="chk_reach" id="checkReachSite" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-              <span class="font-bold text-slate-800 flex-grow">Reach the site</span>
+              <input type="text" value="Reach the site" class="flex-grow font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 focus:outline-none px-1 default-chk-label">
               <input type="time" id="timeReachSite" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
             </div>
 
             <!-- Default Item 2 -->
-            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 default-chk-item">
               <input type="checkbox" name="chk_mat" id="checkCheckMaterials" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-              <span class="font-bold text-slate-800 flex-grow">Check the materials</span>
+              <input type="text" value="Check the materials" class="flex-grow font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 focus:outline-none px-1 default-chk-label">
               <input type="time" id="timeCheckMaterials" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
             </div>
 
             <!-- Default Item 3 -->
-            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 default-chk-item">
               <input type="checkbox" name="chk_tea" id="checkTeaLunch" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-              <span class="font-bold text-slate-800 flex-grow">Tea / lunch intervals</span>
+              <input type="text" value="Tea / lunch intervals" class="flex-grow font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 focus:outline-none px-1 default-chk-label">
               <input type="time" id="timeTeaLunch" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
             </div>
           </div>
@@ -1268,22 +1323,20 @@
           <textarea id="logNotes" rows="3" required placeholder="e.g. Slab poured successfully on Block B. Inspectors verified rebar." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-slate-700 focus:outline-none bg-white"></textarea>
         </div>
 
-        <!-- WORK UPDATE PHOTOS -->
+        <!-- WORK UPDATE PHOTOS (MULTIPLE ATTACHMENTS SUPPORT) -->
         <div class="space-y-2">
-          <label class="block font-bold text-slate-700 uppercase">Work Update Photos (Attach or URL)</label>
+          <label class="block font-bold text-slate-700 uppercase">Work Update Photos (Attach Multiple Images)</label>
           <div class="flex items-center gap-2">
-            <input type="file" accept="image/*" id="logPhotoFile" onchange="handleLogPhotoUpload(event)" class="w-full text-[11px] text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer border border-slate-300 rounded-lg p-1 bg-white">
+            <input type="file" accept="image/*" multiple id="logPhotoFiles" onchange="handleLogPhotosUpload(event)" class="w-full text-[11px] text-slate-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer border border-slate-300 rounded-lg p-1 bg-white">
           </div>
-          <input type="hidden" id="logPhotoDataUrl">
-          <div id="logPhotoPreviewContainer" class="hidden relative w-24 h-24 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 mt-2">
-            <img id="logPhotoPreviewImg" src="" alt="Preview" class="w-full h-full object-cover">
-            <button type="button" onclick="clearLogPhoto()" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">&times;</button>
+          <div id="logPhotosPreviewContainer" class="flex flex-wrap gap-2 mt-2">
+            <!-- Dynamically populated photo thumbnails -->
           </div>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
           <button type="button" onclick="closeModal('logModal')" class="px-4 py-2 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-sm">Post Work Log</button>
+          <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-sm">Save Work Log</button>
         </div>
       </form>
     </div>
@@ -1527,7 +1580,7 @@
               { label: 'Tea / lunch intervals', checked: true, time: '13:00' }
             ],
             notes: 'Foundation slab poured on Block B. Inspectors verified rebar grid.',
-            photo: ''
+            photos: []
           }
         ]
       }
@@ -1539,6 +1592,7 @@
     let activeMasterTab = 'staff';
     let pendingConfirmAction = null;
     let currentUser = null;
+    let currentLogPhotosArray = [];
 
     function setActiveSiteId(id) {
       currentSiteId = id;
@@ -1649,7 +1703,7 @@
         if (err.name === 'QuotaExceededError' || err.code === 22) {
           console.warn("localStorage quota exceeded. Pruning photo payloads.");
           sites.forEach(s => {
-            (s.logs || []).forEach(l => { if (l.photo && l.photo.startsWith('data:image')) l.photo = ''; });
+            (s.logs || []).forEach(l => { if (l.photos) l.photos = []; });
           });
           try {
             localStorage.setItem('sm_multi_sites', JSON.stringify(sites));
@@ -1684,8 +1738,8 @@
     function populateResourceSiteSelect(selectElementId, selectedSiteId) {
       const sel = document.getElementById(selectElementId);
       if (!sel) return;
-      const fallbackSiteId = selectedSiteId || currentSiteId || sites[0]?.id || '';
-      sel.innerHTML = sites.map(s => `<option value="${s.id}" ${s.id === fallbackSiteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
+      const fallbackSiteId = selectedSiteId || currentSiteId || '';
+      sel.innerHTML = `<option value="">(Independent / Unassigned)</option>` + sites.map(s => `<option value="${s.id}" ${s.id === fallbackSiteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
     }
 
     // Auth helpers
@@ -1851,7 +1905,7 @@
       const filterSelect = document.getElementById('masterSiteFilter');
       if (filterSelect) {
         const currentVal = filterSelect.value || 'ALL';
-        filterSelect.innerHTML = `<option value="ALL">All Work Sites (Unified)</option>` + sites.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+        filterSelect.innerHTML = `<option value="ALL">All Independent & Assigned Resources</option>` + sites.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
         filterSelect.value = currentVal;
       }
       switchMasterTab(initialTab);
@@ -1944,7 +1998,7 @@
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-slate-400">Assigned Site:</span>
                 <select onchange="reassignStaffSite('${st.id}', '${st.siteId}', this.value)" class="text-[11px] font-semibold text-slate-800 bg-white border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer max-w-[150px]">
-                  <option value="">(Unassigned / Independent)</option>
+                  <option value="">(Independent / Unassigned)</option>
                   ${sites.map(s => `<option value="${s.id}" ${s.id === st.siteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')}
                 </select>
               </div>
@@ -1987,12 +2041,11 @@
         if (!newSite.staff) newSite.staff = [];
         newSite.staff.push(person);
       } else {
-        // Independent / unassigned pool if desired, or push back
         oldSite.staff.splice(idx, 0, person);
       }
       syncStorage();
       refreshActiveViews();
-      showToast('Worker site reallocated.');
+      showToast('Staff assignment updated.');
     }
 
     function renderMasterMaterials() {
@@ -2016,7 +2069,6 @@
         const remaining = Math.max(0, (m.total || 0) - (m.used || 0));
         const isLow = remaining <= (m.minAlert || 0);
         const price = parseFloat(m.pricePerUnit) || 0;
-        const totalVal = (m.total || 0) * price;
         return `
           <div class="bg-white rounded-xl p-3.5 sm:p-4 border border-slate-200 shadow-sm flex flex-col justify-between">
             <div>
@@ -2031,7 +2083,7 @@
                 <div class="flex items-center justify-between text-[11px]">
                   <span class="text-slate-400">Assigned Site:</span>
                   <select onchange="reassignMaterialSite('${m.id}', '${m.siteId}', this.value)" class="text-[11px] font-semibold text-slate-800 bg-white border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer max-w-[150px]">
-                    <option value="">(Unassigned / Independent)</option>
+                    <option value="">(Independent / Unassigned)</option>
                     ${sites.map(s => `<option value="${s.id}" ${s.id === m.siteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')}
                   </select>
                 </div>
@@ -2101,7 +2153,7 @@
               <div class="flex items-center justify-between text-[11px]">
                 <span class="text-slate-400">Assigned Site:</span>
                 <select onchange="reassignToolSite('${t.id}', '${t.siteId}', this.value)" class="text-[11px] font-semibold text-slate-800 bg-white border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 cursor-pointer max-w-[150px]">
-                  <option value="">(Unassigned / Independent)</option>
+                  <option value="">(Independent / Unassigned)</option>
                   ${sites.map(s => `<option value="${s.id}" ${s.id === t.siteId ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('')}
                 </select>
               </div>
@@ -2212,6 +2264,7 @@
       document.getElementById('currentSiteName').textContent = site.name;
       document.getElementById('currentSiteLocation').textContent = site.location;
       document.getElementById('currentSiteManager').textContent = site.manager;
+      document.getElementById('currentSiteCustomer').textContent = site.customerName || 'N/A';
       document.getElementById('currentSiteProgressText').textContent = `${site.progress || 0}%`;
       document.getElementById('currentSiteProgressBar').style.width = `${site.progress || 0}%`;
 
@@ -2247,9 +2300,17 @@
       const site = getCurrentSite();
       const tbody = document.getElementById('siteMaterialsTableBody');
       const emptyMsg = document.getElementById('noSiteMaterials');
+      const sumEl = document.getElementById('totalMaterialsInventorySum');
       if (!site || !tbody || !emptyMsg) return;
 
       const list = site.materials || [];
+      let totalValue = 0;
+      list.forEach(m => {
+        const remaining = Math.max(0, (m.total || 0) - (m.used || 0));
+        totalValue += remaining * (parseFloat(m.pricePerUnit) || 0);
+      });
+      if (sumEl) sumEl.textContent = `$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
       if (list.length === 0) {
         tbody.innerHTML = '';
         emptyMsg.classList.remove('hidden');
@@ -2283,7 +2344,7 @@
     function openMaterialModal(preselectedSiteId = null) {
       document.getElementById('materialForm').reset();
       document.getElementById('matId').value = '';
-      const targetSite = preselectedSiteId || currentSiteId || sites[0]?.id || '';
+      const targetSite = preselectedSiteId || currentSiteId || '';
       document.getElementById('matOriginalSiteId').value = targetSite;
       populateResourceSiteSelect('matSiteSelect', targetSite);
       openModal('materialModal');
@@ -2309,10 +2370,9 @@
     function saveMaterial(e) {
       e.preventDefault();
       const id = document.getElementById('matId').value;
+      const originalSiteId = document.getElementById('matOriginalSiteId').value;
       const targetSiteId = document.getElementById('matSiteSelect').value;
-      const targetSite = sites.find(s => s.id === targetSiteId);
-      if (!targetSite) return;
-
+      
       const newMat = {
         id: id || 'm_' + Date.now(),
         name: document.getElementById('matName').value.trim(),
@@ -2324,13 +2384,27 @@
         minAlert: parseFloat(document.getElementById('matMinAlert').value) || 0
       };
 
-      if (!targetSite.materials) targetSite.materials = [];
-      if (id) {
-        const idx = targetSite.materials.findIndex(m => m.id === id);
-        if (idx !== -1) targetSite.materials[idx] = newMat;
-        else targetSite.materials.push(newMat);
+      if (originalSiteId) {
+        const oldSite = sites.find(s => s.id === originalSiteId);
+        if (oldSite && oldSite.materials) {
+          oldSite.materials = oldSite.materials.filter(m => m.id !== id);
+        }
+      }
+
+      if (targetSiteId) {
+        const targetSite = sites.find(s => s.id === targetSiteId);
+        if (targetSite) {
+          if (!targetSite.materials) targetSite.materials = [];
+          targetSite.materials.push(newMat);
+        }
       } else {
-        targetSite.materials.push(newMat);
+        if (currentSiteId) {
+          const cur = sites.find(s => s.id === currentSiteId);
+          if (cur) {
+            if (!cur.materials) cur.materials = [];
+            cur.materials.push(newMat);
+          }
+        }
       }
 
       closeModal('materialModal');
@@ -2420,6 +2494,7 @@
       const tool = (site?.tools || []).find(t => t.id === id);
       if (!tool) return;
       document.getElementById('toolId').value = tool.id;
+      document.getElementById('toolOriginalSiteId').value = site.id;
       populateResourceSiteSelect('toolSiteSelect', site.id);
       document.getElementById('toolName').value = tool.name;
       document.getElementById('toolSerial').value = tool.serial || '';
@@ -2433,8 +2508,8 @@
     function saveTool(e) {
       e.preventDefault();
       const id = document.getElementById('toolId').value;
-      const targetSite = sites.find(s => s.id === document.getElementById('toolSiteSelect').value);
-      if (!targetSite) return;
+      const originalSiteId = document.getElementById('toolOriginalSiteId').value;
+      const targetSiteId = document.getElementById('toolSiteSelect').value;
 
       const newTool = {
         id: id || 't_' + Date.now(),
@@ -2446,13 +2521,27 @@
         condition: document.getElementById('toolCondition').value.trim()
       };
 
-      if (!targetSite.tools) targetSite.tools = [];
-      if (id) {
-        const idx = targetSite.tools.findIndex(t => t.id === id);
-        if (idx !== -1) targetSite.tools[idx] = newTool;
-        else targetSite.tools.push(newTool);
+      if (originalSiteId) {
+        const oldSite = sites.find(s => s.id === originalSiteId);
+        if (oldSite && oldSite.tools) {
+          oldSite.tools = oldSite.tools.filter(t => t.id !== id);
+        }
+      }
+
+      if (targetSiteId) {
+        const targetSite = sites.find(s => s.id === targetSiteId);
+        if (targetSite) {
+          if (!targetSite.tools) targetSite.tools = [];
+          targetSite.tools.push(newTool);
+        }
       } else {
-        targetSite.tools.push(newTool);
+        if (currentSiteId) {
+          const cur = sites.find(s => s.id === currentSiteId);
+          if (cur) {
+            if (!cur.tools) cur.tools = [];
+            cur.tools.push(newTool);
+          }
+        }
       }
 
       closeModal('toolModal');
@@ -2510,7 +2599,9 @@
     function openStaffModal(preselectedSiteId = null) {
       document.getElementById('staffForm').reset();
       document.getElementById('staffId').value = '';
-      populateResourceSiteSelect('staffSiteSelect', preselectedSiteId || currentSiteId);
+      const targetSite = preselectedSiteId || currentSiteId || '';
+      document.getElementById('staffOriginalSiteId').value = targetSite;
+      populateResourceSiteSelect('staffSiteSelect', targetSite);
       openModal('staffModal');
     }
 
@@ -2519,6 +2610,7 @@
       const person = (site?.staff || []).find(st => st.id === id);
       if (!person) return;
       document.getElementById('staffId').value = person.id;
+      document.getElementById('staffOriginalSiteId').value = site.id;
       populateResourceSiteSelect('staffSiteSelect', site.id);
       document.getElementById('staffFullName').value = person.name;
       document.getElementById('staffTrade').value = person.trade;
@@ -2531,8 +2623,8 @@
     function saveStaff(e) {
       e.preventDefault();
       const id = document.getElementById('staffId').value;
-      const targetSite = sites.find(s => s.id === document.getElementById('staffSiteSelect').value);
-      if (!targetSite) return;
+      const originalSiteId = document.getElementById('staffOriginalSiteId').value;
+      const targetSiteId = document.getElementById('staffSiteSelect').value;
 
       const newStaff = {
         id: id || 's_' + Date.now(),
@@ -2543,13 +2635,27 @@
         present: document.getElementById('staffPresent').value === 'true'
       };
 
-      if (!targetSite.staff) targetSite.staff = [];
-      if (id) {
-        const idx = targetSite.staff.findIndex(st => st.id === id);
-        if (idx !== -1) targetSite.staff[idx] = newStaff;
-        else targetSite.staff.push(newStaff);
+      if (originalSiteId) {
+        const oldSite = sites.find(s => s.id === originalSiteId);
+        if (oldSite && oldSite.staff) {
+          oldSite.staff = oldSite.staff.filter(st => st.id !== id);
+        }
+      }
+
+      if (targetSiteId) {
+        const targetSite = sites.find(s => s.id === targetSiteId);
+        if (targetSite) {
+          if (!targetSite.staff) targetSite.staff = [];
+          targetSite.staff.push(newStaff);
+        }
       } else {
-        targetSite.staff.push(newStaff);
+        if (currentSiteId) {
+          const cur = sites.find(s => s.id === currentSiteId);
+          if (cur) {
+            if (!cur.staff) cur.staff = [];
+            cur.staff.push(newStaff);
+          }
+        }
       }
 
       closeModal('staffModal');
@@ -2595,7 +2701,7 @@
 
       if (list.length === 0) {
         tbody.innerHTML = '';
-        emptyMsg.classList.add('hidden'); // or remove hidden
+        emptyMsg.classList.remove('hidden');
         return;
       }
       emptyMsg.classList.add('hidden');
@@ -2651,7 +2757,7 @@
       showToast('Expense deleted.');
     }
 
-    // Work Log & Checklists (Time Intervals, Custom Checklists & Photos)
+    // Work Log & Checklists (Time Intervals, Multi-Photos & Edit/Delete Support)
     function renderCurrentSiteLogs() {
       const site = getCurrentSite();
       const container = document.getElementById('siteDailyLogsList');
@@ -2675,6 +2781,12 @@
           </div>
         `).join('');
 
+        const photosHTML = (log.photos || []).map(p => `
+          <a href="${p}" target="_blank" class="inline-block rounded-lg overflow-hidden border border-slate-200 w-24 h-24 bg-slate-100 hover:opacity-90 flex-shrink-0">
+            <img src="${p}" alt="Work Update" class="w-full h-full object-cover">
+          </a>
+        `).join('');
+
         return `
           <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -2682,7 +2794,10 @@
                 <h4 class="font-bold text-slate-900 text-sm">${escapeHtml(log.title)}</h4>
                 <span class="text-[10px] text-slate-400 font-mono">${escapeHtml(log.time)}</span>
               </div>
-              <button onclick="deleteLog('${log.id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can"></i></button>
+              <div class="flex items-center gap-2">
+                <button onclick="editLog('${log.id}')" class="text-xs px-2.5 py-1 bg-sky-50 text-sky-700 font-bold rounded hover:bg-sky-100"><i class="fa-solid fa-pen text-[10px]"></i> Edit</button>
+                <button onclick="deleteLog('${log.id}')" class="text-slate-400 hover:text-rose-600 p-1" title="Delete Log"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -2691,12 +2806,12 @@
 
             <p class="text-xs text-slate-700 bg-slate-50 p-3 rounded-lg leading-relaxed">${escapeHtml(log.notes)}</p>
 
-            ${log.photo ? `
-              <div class="mt-2">
-                <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Attached Work Update Photo:</span>
-                <a href="${log.photo}" target="_blank" class="inline-block rounded-lg overflow-hidden border border-slate-200 w-32 h-32 bg-slate-100 hover:opacity-90">
-                  <img src="${log.photo}" alt="Work Update" class="w-full h-full object-cover">
-                </a>
+            ${photosHTML ? `
+              <div>
+                <span class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Attached Work Update Photos (${(log.photos || []).length}):</span>
+                <div class="flex flex-wrap gap-2">
+                  ${photosHTML}
+                </div>
               </div>
             ` : ''}
           </div>
@@ -2706,119 +2821,162 @@
 
     function openLogModal() {
       document.getElementById('logForm').reset();
+      document.getElementById('logId').value = '';
+      document.getElementById('logModalHeading').innerHTML = '<i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Daily Work Log & Time Interval Checklists';
       populateResourceSiteSelect('logSiteSelect', currentSiteId);
       document.getElementById('logTitle').value = 'Daily Work Log - ' + new Date().toLocaleDateString();
-      document.getElementById('logPhotoDataUrl').value = '';
-      document.getElementById('logPhotoPreviewContainer').classList.add('hidden');
-
-      document.getElementById('logChecklistsContainer').innerHTML = `
-        <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
-          <input type="checkbox" name="chk_reach" id="checkReachSite" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-          <span class="font-bold text-slate-800 flex-grow">Reach the site</span>
-          <input type="time" id="timeReachSite" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
-        </div>
-        <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
-          <input type="checkbox" name="chk_mat" id="checkCheckMaterials" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-          <span class="font-bold text-slate-800 flex-grow">Check the materials</span>
-          <input type="time" id="timeCheckMaterials" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
-        </div>
-        <div class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200">
-          <input type="checkbox" name="chk_tea" id="checkTeaLunch" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400">
-          <span class="font-bold text-slate-800 flex-grow">Tea / lunch intervals</span>
-          <input type="time" id="timeTeaLunch" class="text-[11px] border border-slate-300 rounded p-1 font-mono">
-        </div>
-      `;
-
+      currentLogPhotosArray = [];
+      document.getElementById('logPhotosPreviewContainer').innerHTML = '';
       openModal('logModal');
     }
 
-    window.addCustomLogCheckboxItem = function() {
+    window.addCustomLogCheckboxItem = function(labelText = '', timeVal = '', isChecked = false) {
       const container = document.getElementById('logChecklistsContainer');
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 custom-chk-item';
       div.innerHTML = `
-        <input type="checkbox" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 custom-chk-box">
-        <input type="text" placeholder="Custom checklist item (e.g. Safety Briefing)" class="flex-grow text-xs border border-slate-300 rounded p-1.5 font-semibold custom-chk-label">
-        <input type="time" class="text-[11px] border border-slate-300 rounded p-1 font-mono custom-chk-time">
+        <input type="checkbox" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 custom-chk-box">
+        <input type="text" value="${escapeHtml(labelText)}" placeholder="Checklist item (e.g. Safety Briefing)" class="flex-grow text-xs font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 focus:outline-none px-1 custom-chk-label">
+        <input type="time" value="${escapeHtml(timeVal)}" class="text-[11px] border border-slate-300 rounded p-1 font-mono custom-chk-time">
         <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 px-1.5"><i class="fa-solid fa-trash-can text-xs"></i></button>
       `;
       container.appendChild(div);
     };
 
-    function handleLogPhotoUpload(e) {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          const maxDim = 600;
-          if (width > height && width > maxDim) {
-            height *= maxDim / width;
-            width = maxDim;
-          } else if (height > maxDim) {
-            width *= maxDim / height;
-            height = maxDim;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    function handleLogPhotosUpload(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
 
-          document.getElementById('logPhotoDataUrl').value = dataUrl;
-          document.getElementById('logPhotoPreviewImg').src = dataUrl;
-          document.getElementById('logPhotoPreviewContainer').classList.remove('hidden');
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const maxDim = 600;
+            if (width > height && width > maxDim) {
+              height *= maxDim / width;
+              width = maxDim;
+            } else if (height > maxDim) {
+              width *= maxDim / height;
+              height = maxDim;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            currentLogPhotosArray.push(dataUrl);
+            renderLogPhotosPreview();
+          };
+          img.src = evt.target.result;
         };
-        img.src = evt.target.result;
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      });
     }
 
-    function clearLogPhoto() {
-      document.getElementById('logPhotoFile').value = '';
-      document.getElementById('logPhotoDataUrl').value = '';
-      document.getElementById('logPhotoPreviewContainer').classList.add('hidden');
+    function renderLogPhotosPreview() {
+      const container = document.getElementById('logPhotosPreviewContainer');
+      if (!container) return;
+      container.innerHTML = currentLogPhotosArray.map((p, idx) => `
+        <div class="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-300 bg-slate-100 flex-shrink-0">
+          <img src="${p}" alt="Preview" class="w-full h-full object-cover">
+          <button type="button" onclick="removeLogPhoto(${idx})" class="absolute top-1 right-1 bg-slate-900/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">&times;</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeLogPhoto = function(index) {
+      currentLogPhotosArray.splice(index, 1);
+      renderLogPhotosPreview();
+    };
+
+    function editLog(id) {
+      const site = getCurrentSite();
+      const log = (site.logs || []).find(l => l.id === id);
+      if (!log) return;
+
+      document.getElementById('logId').value = log.id;
+      document.getElementById('logModalHeading').innerHTML = '<i class="fa-solid fa-pen text-amber-400"></i> Edit Daily Work Log';
+      populateResourceSiteSelect('logSiteSelect', site.id);
+      document.getElementById('logTitle').value = log.title;
+      document.getElementById('logNotes').value = log.notes;
+      currentLogPhotosArray = log.photos ? [...log.photos] : (log.photo ? [log.photo] : []);
+      renderLogPhotosPreview();
+
+      const container = document.getElementById('logChecklistsContainer');
+      container.innerHTML = '';
+
+      const defaultLabels = ['Reach the site', 'Check the materials', 'Tea / lunch intervals'];
+      defaultLabels.forEach((lbl, i) => {
+        const found = (log.checklists || []).find(c => c.label === lbl);
+        const isChecked = found ? found.checked : false;
+        const timeVal = found ? (found.time || '') : '';
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2 bg-white p-2.5 rounded-lg border border-slate-200 default-chk-item';
+        div.innerHTML = `
+          <input type="checkbox" ${isChecked ? 'checked' : ''} class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 default-chk-box">
+          <input type="text" value="${lbl}" class="flex-grow font-bold text-slate-800 bg-transparent border-b border-transparent focus:border-slate-300 focus:outline-none px-1 default-chk-label">
+          <input type="time" value="${timeVal}" class="text-[11px] border border-slate-300 rounded p-1 font-mono default-chk-time">
+        `;
+        container.appendChild(div);
+      });
+
+      (log.checklists || []).forEach(chk => {
+        if (!defaultLabels.includes(chk.label)) {
+          addCustomLogCheckboxItem(chk.label, chk.time, chk.checked);
+        }
+      });
+
+      openModal('logModal');
     }
 
     function saveLog(e) {
       e.preventDefault();
+      const id = document.getElementById('logId').value;
       const site = sites.find(s => s.id === document.getElementById('logSiteSelect').value);
       if (!site) return;
 
-      let checklists = [
-        { label: 'Reach the site', checked: document.getElementById('checkReachSite')?.checked || false, time: document.getElementById('timeReachSite')?.value || '' },
-        { label: 'Check the materials', checked: document.getElementById('checkCheckMaterials')?.checked || false, time: document.getElementById('timeCheckMaterials')?.value || '' },
-        { label: 'Tea / lunch intervals', checked: document.getElementById('checkTeaLunch')?.checked || false, time: document.getElementById('timeTeaLunch')?.value || '' }
-      ];
+      let checklists = [];
+      document.querySelectorAll('.default-chk-item').forEach(item => {
+        const lbl = item.querySelector('.default-chk-label')?.value.trim();
+        const chk = item.querySelector('input[type="checkbox"]')?.checked || false;
+        const time = item.querySelector('input[type="time"]')?.value || '';
+        if (lbl) checklists.push({ label: lbl, checked: chk, time: time });
+      });
 
       document.querySelectorAll('.custom-chk-item').forEach(item => {
         const lbl = item.querySelector('.custom-chk-label')?.value.trim();
         const chk = item.querySelector('.custom-chk-box')?.checked || false;
         const time = item.querySelector('.custom-chk-time')?.value || '';
-        if (lbl) {
-          checklists.push({ label: lbl, checked: chk, time: time });
-        }
+        if (lbl) checklists.push({ label: lbl, checked: chk, time: time });
       });
 
-      const log = {
-        id: 'log_' + Date.now(),
+      const logData = {
+        id: id || 'log_' + Date.now(),
         title: document.getElementById('logTitle').value.trim(),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' Today',
         checklists: checklists,
         notes: document.getElementById('logNotes').value.trim(),
-        photo: document.getElementById('logPhotoDataUrl').value
+        photos: [...currentLogPhotosArray]
       };
 
       if (!site.logs) site.logs = [];
-      site.logs.unshift(log);
+      if (id) {
+        const idx = site.logs.findIndex(l => l.id === id);
+        if (idx !== -1) site.logs[idx] = logData;
+        else site.logs.unshift(logData);
+      } else {
+        site.logs.unshift(logData);
+      }
+
       closeModal('logModal');
       syncStorage();
       loadCurrentSiteData();
-      showToast('Work log checklist saved.');
+      showToast('Work log checklist saved successfully.');
     }
 
     function deleteLog(id) {
@@ -2829,13 +2987,15 @@
       showToast('Log deleted.');
     }
 
+    // Site Management (10-Field Report)
     function openNewSiteModal() {
       document.getElementById('siteForm').reset();
       document.getElementById('formSiteId').value = '';
-      document.getElementById('formSiteProgress').value = '10';
+      document.getElementById('formSiteProgress').value = '15';
       const now = new Date();
       document.getElementById('visitDateOfWork').value = now.toISOString().slice(0, 10);
       document.getElementById('visitStartTime').value = now.toTimeString().slice(0, 5);
+      document.getElementById('siteModalTitle').innerHTML = '<i class="fa-solid fa-building text-amber-400"></i> Create New Work Site & Report';
       openModal('siteModal');
     }
 
@@ -2849,7 +3009,7 @@
       document.getElementById('formSiteStatus').value = site.status || 'Active';
       document.getElementById('formSiteProgress').value = site.progress || 0;
 
-      document.getElementById('visitCustomerName').value = site.customerName || site.name || '';
+      document.getElementById('visitCustomerName').value = site.customerName || '';
       document.getElementById('visitDateOfWork').value = site.dateOfWork || new Date().toISOString().slice(0, 10);
       document.getElementById('visitStartTime').value = site.startTime || '08:30';
       document.getElementById('visitTypeOfWork').value = site.typeOfWork || '';
@@ -2857,6 +3017,7 @@
       document.getElementById('visitQuantityItems').value = site.quantityItems || '';
       document.getElementById('visitExpectedAmount').value = site.expectedAmount || '';
 
+      document.getElementById('siteModalTitle').innerHTML = '<i class="fa-solid fa-pen text-amber-400"></i> Edit Work Site & Report';
       openModal('siteModal');
     }
 
@@ -2892,7 +3053,7 @@
           site.staffAssigned = staffAssigned;
           site.quantityItems = quantityItems;
           site.expectedAmount = expectedAmount;
-          showToast('Work site & visit report updated.');
+          showToast('Work site & report updated.');
         }
       } else {
         const newSite = {
@@ -3021,8 +3182,9 @@
     window.saveExpense = saveExpense;
     window.deleteExpense = deleteExpense;
     window.openLogModal = openLogModal;
-    window.handleLogPhotoUpload = handleLogPhotoUpload;
-    window.clearLogPhoto = clearLogPhoto;
+    window.editLog = editLog;
+    window.handleLogPhotosUpload = handleLogPhotosUpload;
+    window.removeLogPhoto = removeLogPhoto;
     window.saveLog = saveLog;
     window.deleteLog = deleteLog;
     window.openNewSiteModal = openNewSiteModal;
